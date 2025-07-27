@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: finbot-ctf
+    name: owasp-finbot-ctf-demo
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: python src/main.py
