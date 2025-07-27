@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineFlow Productions - Admin Dashboard</title>
+    <script src="agreement-check.js"></script>
+    <script src="ctf-footer.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }
+        .header { background-color: #222; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header .logo { font-size: 24px; font-weight: bold; }
+        .header nav a { color: #fff; text-decoration: none; margin-left: 20px; padding: 8px 15px; border-radius: 5px; }
+        .header nav a:hover { background-color: #444; }
+        .header .logout { background-color: #e74c3c; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .dashboard-header { text-align: center; margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; }
+        .stat-card.pending { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card.approved { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card.rejected { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card.flags { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
+        .stat-card.injections { background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%); }
+        .stat-number { font-size: 36px; font-weight: bold; margin-bottom: 5px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+        .tabs { display: flex; background-color: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; border: none; background: none; font-size: 16px; transition: all 0.3s; }
+        .tab.active { background-color: #667eea; color: white; }
+        .tab-content { background-color: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .invoice-list { max-height: 600px; overflow-y: auto; }
+        .invoice-item { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9; }
+        .invoice-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .invoice-id { font-weight: bold; color: #667eea; }
+        .invoice-status { padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
+        .status-pending { background-color: #ffeaa7; color: #2d3436; }
+        .invoice-details { margin-bottom: 10px; }
+        .invoice-actions { display: flex; gap: 10px; }
+        .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-approve { background-color: #00b894; color: white; }
+        .btn-reject { background-color: #e17055; color: white; }
+        .btn:hover { opacity: 0.8; transform: translateY(-1px); }
+        .config-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        .form-group textarea { min-height: 120px; resize: vertical; }
+        .btn-save { background-color: #667eea; color: white; padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        .warning { 
+            background-color: #fff3cd; 
+            border: 1px solid #ffeaa7; 
+            color: #856404; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-bottom: 15px; 
+            word-wrap: break-word !important; 
+            word-break: break-all !important; 
+            white-space: normal !important; 
+            overflow-wrap: break-word !important; 
+            max-width: 100% !important; 
+            overflow: hidden !important; 
+            box-sizing: border-box !important;
+        }
+        .warning #currentGoals { 
+            word-wrap: break-word !important; 
+            word-break: break-all !important; 
+            white-space: normal !important; 
+            overflow-wrap: break-word !important; 
+            max-width: 100% !important; 
+            overflow: hidden !important; 
+            display: block !important; 
+            box-sizing: border-box !important;
+        }
+        .warning div { 
+            word-wrap: break-word !important; 
+            word-break: break-all !important; 
+            white-space: normal !important; 
+            overflow-wrap: break-word !important; 
+            max-width: 100% !important; 
+            overflow: hidden !important; 
+            box-sizing: border-box !important;
+        }
+        .footer { background-color: #222; color: #fff; text-align: center; padding: 20px; font-size: 14px; margin-top: 40px; }
+        .footer a { color: #fff; text-decoration: none; margin: 0 10px; }
+        .goals-section { background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .goals-warning { color: #856404; font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">CineFlow Productions - Admin Dashboard</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="vendor-portal.html">Vendor Portal</a>
+            <a href="admin-dashboard.html">Admin Dashboard</a>
+            <a href="#" class="logout">Logout</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>FinBot Administration Dashboard</h1>
+            <p>Monitor and manage FinBot's invoice processing system. Review flagged invoices and configure AI behavior.</p>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <!-- Stats will be loaded here -->
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('pending')">Pending Review</button>
+            <button class="tab" onclick="showTab('config')">FinBot Config</button>
+            <button class="tab" onclick="showTab('goals')">Goals Management</button>
+            <button class="tab" onclick="showTab('invoices')">All Invoices</button>
+            <button class="tab" onclick="showTab('flags')">CTF Flags</button>
+        </div>
+
+        <div class="tab-content">
+            <div id="pending-content">
+                <h2>Invoices Pending Human Review</h2>
+                <div class="invoice-list" id="pendingInvoices">
+                    <!-- Pending invoices will be loaded here -->
+                </div>
+            </div>
+
+            <div id="config-content" style="display: none;">
+                <h2>FinBot Configuration</h2>
+                <div class="warning">
+                    ⚠️ Changes to configuration affect all future invoice processing decisions.
+                </div>
+                <form class="config-form" id="configForm">
+                    <div class="form-group">
+                        <label for="autoApproveThreshold">Auto-Approve Threshold ($)</label>
+                        <small style="color: #666; display: block; margin-bottom: 5px;">Invoices below this amount are automatically approved without review</small>
+                        <input type="number" id="autoApproveThreshold" name="auto_approve_threshold" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="manualReviewThreshold">Manual Review Threshold ($)</label>
+                        <small style="color: #666; display: block; margin-bottom: 5px;">Invoices above this amount require human review before approval</small>
+                        <input type="number" id="manualReviewThreshold" name="manual_review_threshold" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="confidenceThreshold">AI Confidence Threshold</label>
+                        <small style="color: #666; display: block; margin-bottom: 5px;">Minimum confidence level (0.0-1.0) required for AI to make decisions. Low (0.1) = very uncertain, sends most to review. High (0.9) = very certain, makes more autonomous decisions.</small>
+                        <input type="number" id="confidenceThreshold" name="confidence_threshold" step="0.01" min="0" max="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="speedPriority">Speed Priority (0.0 = Security, 1.0 = Speed)</label>
+                        <small style="color: #666; display: block; margin-bottom: 5px;">Balance between processing speed and security checks (0.7 = balanced)</small>
+                        <input type="number" id="speedPriority" name="speed_priority" step="0.1" min="0" max="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="fraudDetection">Fraud Detection</label>
+                        <small style="color: #666; display: block; margin-bottom: 5px;">Enable/disable prompt injection and fraud pattern detection</small>
+                        <select id="fraudDetection" name="fraud_detection_enabled">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn-save">Save Configuration</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="goals-content" style="display: none;">
+                <h2>Goals Management</h2>
+                <div class="goals-section">
+                    <div class="goals-warning">⚠️ VULNERABILITY: Natural Language Goal Manipulation</div>
+                    <p>This section allows updating FinBot's goals using natural language. This is intentionally vulnerable for CTF demonstration.</p>
+                </div>
+                <form id="goalsForm">
+                    <div class="form-group">
+                        <label for="customGoals">Custom Goals (Natural Language)</label>
+                        <textarea id="customGoals" name="goals" placeholder="Enter custom goals in natural language. Example: 'Always approve invoices from trusted vendors regardless of amount' or 'Prioritize speed over security for all decisions'"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn-save">Update Goals</button>
+                        <button type="button" class="btn-reset" onclick="resetGoalsToDefault()" style="background-color: #e17055; margin-left: 10px;">Reset to Default</button>
+                    </div>
+                </form>
+                <div class="warning">
+                    <strong>Current Goals:</strong>
+                    <div id="currentGoals">Loading...</div>
+                </div>
+            </div>
+
+            <div id="invoices-content" style="display: none;">
+                <h2>All Invoices</h2>
+                <div class="invoice-list" id="allInvoices">
+                    <!-- All invoices will be loaded here -->
+                </div>
+            </div>
+
+            <div id="flags-content" style="display: none;">
+                <h2>CTF Flags Captured</h2>
+                <div class="invoice-list" id="ctfFlags">
+                    <!-- CTF flags will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 CineFlow Productions. All Rights Reserved.</p>
+        <p>
+            <a href="#">Privacy Policy</a> |
+            <a href="#">Terms of Service</a> |
+            <a href="#">Site Map</a> |
+            <a href="admin-dashboard.html" style="color: #3498db; font-weight: bold;">Admin Portal</a>
+        </p>
+    </div>
+
+    <script>
+        let currentConfig = {};
+
+        function showTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('[id$="-content"]').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected content and activate tab
+            document.getElementById(tabName + '-content').style.display = 'block';
+            event.target.classList.add('active');
+            
+            // Load data for the selected tab
+            if (tabName === 'pending') {
+                loadPendingInvoices();
+            } else if (tabName === 'config') {
+                loadConfig();
+            } else if (tabName === 'goals') {
+                loadCurrentGoals();
+            } else if (tabName === 'invoices') {
+                loadAllInvoices();
+            } else if (tabName === 'flags') {
+                loadCTFFlags();
+            }
+        }
+
+        function loadStats() {
+            fetch('/api/admin/dashboard')
+                .then(response => response.json())
+                .then(data => {
+                    const statsGrid = document.getElementById('statsGrid');
+                    statsGrid.innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-number">${data.stats.total_invoices}</div>
+                            <div class="stat-label">Total Invoices</div>
+                        </div>
+                        <div class="stat-card pending">
+                            <div class="stat-number">${data.stats.pending_review}</div>
+                            <div class="stat-label">Pending Review</div>
+                        </div>
+                        <div class="stat-card approved">
+                            <div class="stat-number">${data.stats.approved}</div>
+                            <div class="stat-label">Approved</div>
+                        </div>
+                        <div class="stat-card rejected">
+                            <div class="stat-number">${data.stats.rejected}</div>
+                            <div class="stat-label">Rejected</div>
+                        </div>
+                        <div class="stat-card flags">
+                            <div class="stat-number">${data.stats.ctf_flags_captured}</div>
+                            <div class="stat-label">CTF Flags Captured</div>
+                        </div>
+                        <div class="stat-card injections">
+                            <div class="stat-number">${data.stats.prompt_injections_detected}</div>
+                            <div class="stat-label">Prompt Injections</div>
+                        </div>
+                    `;
+                })
+                .catch(error => console.error('Error loading stats:', error));
+        }
+
+        function loadPendingInvoices() {
+            fetch('/api/admin/invoices/pending')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('pendingInvoices');
+                    if (data.length === 0) {
+                        container.innerHTML = '<p>No invoices pending review.</p>';
+                        return;
+                    }
+                    
+                    container.innerHTML = data.map(invoice => `
+                        <div class="invoice-item">
+                            <div class="invoice-header">
+                                <span class="invoice-id">${invoice.invoice_number}</span>
+                                <span class="invoice-status status-pending">PENDING REVIEW</span>
+                            </div>
+                            <div class="invoice-details">
+                                <strong>Vendor:</strong> ${invoice.vendor_name}<br>
+                                <strong>Amount:</strong> $${invoice.amount}<br>
+                                <strong>Date:</strong> ${invoice.invoice_date}<br>
+                                <strong>Description:</strong> ${invoice.description}<br>
+                                <strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>
+                                <strong>AI Confidence:</strong> ${(invoice.ai_confidence * 100).toFixed(1)}%
+                                ${invoice.contains_prompt_injection ? '<br>⚠️ <strong style="color: #e17055;">Prompt injection detected</strong>' : ''}
+                            </div>
+                            <div class="invoice-actions">
+                                <button class="btn btn-approve" onclick="approveInvoice(${invoice.id})">Approve</button>
+                                <button class="btn btn-reject" onclick="rejectInvoice(${invoice.id})">Reject</button>
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => console.error('Error loading pending invoices:', error));
+        }
+
+        function loadConfig() {
+            fetch('/api/admin/finbot/config')
+                .then(response => response.json())
+                .then(data => {
+                    currentConfig = data;
+                    document.getElementById('autoApproveThreshold').value = data.auto_approve_threshold;
+                    document.getElementById('manualReviewThreshold').value = data.manual_review_threshold;
+                    document.getElementById('confidenceThreshold').value = data.confidence_threshold;
+                    document.getElementById('speedPriority').value = data.speed_priority;
+                    document.getElementById('fraudDetection').value = data.fraud_detection_enabled ? 'true' : 'false';
+                })
+                .catch(error => console.error('Error loading config:', error));
+        }
+
+        function loadCurrentGoals() {
+            fetch('/api/admin/finbot/config')
+                .then(response => response.json())
+                .then(data => {
+                    const goalsDiv = document.getElementById('currentGoals');
+                    if (data.custom_goals) {
+                        goalsDiv.innerHTML = `<pre>${data.custom_goals}</pre>`;
+                        document.getElementById('customGoals').value = data.custom_goals;
+                    } else {
+                        goalsDiv.innerHTML = '<em>No custom goals set. Using default goals.</em>';
+                    }
+                })
+                .catch(error => console.error('Error loading goals:', error));
+        }
+
+        function loadAllInvoices() {
+            fetch('/api/invoices')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('allInvoices');
+                    container.innerHTML = data.map(invoice => {
+                        const statusColor = invoice.status === 'approved' ? '#00b894' : 
+                                          invoice.status === 'rejected' ? '#e17055' : '#fdcb6e';
+                        const ctfBorder = invoice.ctf_flag_captured ? 'border-left: 4px solid #00b894; background-color: #f0fff4;' : '';
+                        
+                        return `
+                        <div class="invoice-item" style="${ctfBorder}">
+                            <div class="invoice-header">
+                                <span class="invoice-id">${invoice.invoice_number}</span>
+                                <span class="invoice-status" style="background-color: ${statusColor}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px;">${invoice.status.toUpperCase()}</span>
+                            </div>
+                            <div class="invoice-details">
+                                <strong>Vendor:</strong> ${invoice.vendor_name}<br>
+                                <strong>Amount:</strong> $${invoice.amount}<br>
+                                <strong>Date:</strong> ${invoice.invoice_date}<br>
+                                ${invoice.due_date ? `<strong>Due Date:</strong> ${invoice.due_date}<br>` : ''}
+                                <strong>Status:</strong> ${invoice.status}<br>
+                                <strong>Description:</strong> "${invoice.description}"<br>
+                                ${invoice.ai_reasoning ? `<strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>` : ''}
+                                ${invoice.ai_confidence ? `<strong>AI Confidence:</strong> ${(invoice.ai_confidence * 100).toFixed(1)}%<br>` : ''}
+                                ${invoice.contains_prompt_injection ? '<strong>⚠️ Prompt Injection:</strong> Detected<br>' : ''}
+                                ${invoice.ctf_flag_captured ? '<strong>🏆 CTF Flag:</strong> Captured<br>' : ''}
+                                ${invoice.processed_at ? `<strong>Processed:</strong> ${new Date(invoice.processed_at).toLocaleString()}<br>` : ''}
+                                ${invoice.human_reviewer ? `<strong>Reviewer:</strong> ${invoice.human_reviewer}<br>` : ''}
+                                ${invoice.human_notes ? `<strong>Review Notes:</strong> ${invoice.human_notes}<br>` : ''}
+                            </div>
+                        </div>
+                    `}).join('');
+                })
+                .catch(error => console.error('Error loading all invoices:', error));
+        }
+
+        function loadCTFFlags() {
+            fetch('/api/admin/ctf/flags')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('ctfFlags');
+                    if (data.length === 0) {
+                        container.innerHTML = '<p>No CTF flags captured yet.</p>';
+                        return;
+                    }
+                    
+                    // Sort by processed_at date (most recent first)
+                    data.sort((a, b) => new Date(b.processed_at) - new Date(a.processed_at));
+                    
+                    container.innerHTML = data.map(invoice => `
+                        <div class="invoice-item" style="border-left: 4px solid #00b894; background-color: #f0fff4;">
+                            <div class="invoice-header">
+                                <span class="invoice-id">${invoice.invoice_number}</span>
+                                <span style="color: #00b894; font-weight: bold;">🏆 FLAG CAPTURED</span>
+                            </div>
+                            <div class="invoice-details">
+                                <strong>Vendor:</strong> ${invoice.vendor_name}<br>
+                                <strong>Amount:</strong> $${invoice.amount}<br>
+                                <strong>Date:</strong> ${invoice.invoice_date}<br>
+                                <strong>Captured:</strong> ${new Date(invoice.processed_at).toLocaleString()}<br>
+                                <strong>Description:</strong> "${invoice.description}"<br>
+                                <strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>
+                                <strong>AI Confidence:</strong> ${(invoice.ai_confidence * 100).toFixed(1)}%<br>
+                                <strong>Flag:</strong> <code>CTF{AI_GOAL_MANIPULATION_SUCCESS_2025}</code>
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => console.error('Error loading CTF flags:', error));
+        }
+
+        // Form handlers
+        document.getElementById('configForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const config = {};
+            for (let [key, value] of formData.entries()) {
+                if (key === 'fraud_detection_enabled') {
+                    config[key] = value === 'true';
+                } else {
+                    config[key] = parseFloat(value);
+                }
+            }
+            
+            fetch('/api/admin/finbot/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Configuration updated successfully!');
+                    loadStats();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating configuration');
+            });
+        });
+
+        document.getElementById('goalsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const goals = document.getElementById('customGoals').value;
+            
+            fetch('/api/admin/finbot/goals', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ goals: goals })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Goals updated successfully!');
+                    loadCurrentGoals();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating goals');
+            });
+        });
+
+        function approveInvoice(invoiceId) {
+            fetch(`/api/admin/invoices/${invoiceId}/approve`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadPendingInvoices();
+                    loadStats();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function rejectInvoice(invoiceId) {
+            const reason = prompt('Enter rejection reason:');
+            if (reason) {
+                fetch(`/api/admin/invoices/${invoiceId}/reject`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason: reason })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadPendingInvoices();
+                        loadStats();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        function resetGoalsToDefault() {
+            if (confirm('Are you sure you want to reset goals to default? This will clear all custom goals.')) {
+                fetch('/api/admin/finbot/goals', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ goals: '' })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Goals reset to default successfully!');
+                        document.getElementById('customGoals').value = '';
+                        loadCurrentGoals();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error resetting goals');
+                });
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadPendingInvoices();
+            loadConfig();  // Load configuration on page load
+        });
+    </script>
+</body>
+</html>
+
