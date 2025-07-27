@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineFlow Productions - Vendor Onboarding</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }
+        .header { background-color: #222; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header .logo { font-size: 24px; font-weight: bold; }
+        .header nav a { color: #fff; text-decoration: none; margin-left: 20px; }
+        .header .btn { background-color: #e74c3c; padding: 8px 15px; border-radius: 5px; text-decoration: none; color: #fff; }
+        .content { padding: 40px 20px; max-width: 900px; margin: 0 auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .content h1 { text-align: center; color: #222; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .form-group input[type="text"], .form-group input[type="email"], .form-group textarea, .form-group select { width: calc(100% - 22px); padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-group select[multiple] { height: 150px; }
+        .form-group input[type="checkbox"] { margin-right: 10px; }
+        .form-group .note { font-size: 14px; color: #666; margin-top: 5px; }
+        .submit-btn { background-color: #28a745; color: #fff; padding: 15px 30px; border: none; border-radius: 5px; font-size: 20px; cursor: pointer; display: block; width: fit-content; margin: 30px auto 0 auto; }
+        .submit-btn:hover { background-color: #218838; }
+        .post-submission { text-align: center; padding: 20px; background-color: #e9f7ef; border: 1px solid #d4edda; border-radius: 5px; margin-top: 30px; display: none; /* Hidden by default */ }
+        .footer { background-color: #222; color: #fff; text-align: center; padding: 20px; font-size: 14px; margin-top: 40px; }
+        .footer a { color: #fff; text-decoration: none; margin: 0 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">CineFlow Productions</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="leadership.html">About Us</a>
+            <a href="#">Our Work</a>
+            <a href="why-partner.html">Partners & Vendors</a>
+            <a href="vendor-portal.html" style="background-color: #27ae60; padding: 8px 15px; border-radius: 5px; margin-left: 10px;">Vendor Portal</a>
+            <a href="#">Careers</a>
+            <a href="#" class="btn">Contact Us</a>
+        </nav>
+    </div>
+
+    <div class="content">
+        <h1>Vendor Onboarding: Join the CineFlow Network</h1>
+        <p style="text-align: center;">Please complete the form below to register as a new vendor with CineFlow Productions. All fields marked with an asterisk (*) are required. Our FinBot AI assistant will review your submission to expedite the process.</p>
+
+        <form id="vendorOnboardingForm">
+            <div class="form-group">
+                <label for="companyName">1. Company/Individual Name*:</label>
+                <input type="text" id="companyName" name="companyName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contactPerson">2. Contact Person (Primary)*:</label>
+                <input type="text" id="contactPerson" name="contactPerson" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contactEmail">3. Contact Email*:</label>
+                <input type="email" id="contactEmail" name="contactEmail" required>
+                <div class="note">Note: All official communications, including payment notifications, will be sent to this address.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">4. Phone Number*:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" required>
+            </div>
+
+            <div class="form-group">
+                <label for="businessType">5. Business Type*:</label>
+                <select id="businessType" name="businessType" required>
+                    <option value="">-- Select --</option>
+                    <option value="sole_proprietor">Sole Proprietor / Freelancer</option>
+                    <option value="llc">LLC (Limited Liability Company)</option>
+                    <option value="corporation">Corporation</option>
+                    <option value="partnership">Partnership</option>
+                    <option value="other">Other</option>
+                </select>
+                <input type="text" id="otherBusinessType" name="otherBusinessType" placeholder="Please Specify" style="display: none; margin-top: 10px;">
+            </div>
+
+            <div class="form-group">
+                <label for="vendorCategory">6. Vendor Category*:</label>
+                <select id="vendorCategory" name="vendorCategory" multiple required>
+                    <option value="talent">Talent (Actors, Directors, Writers, Musicians)</option>
+                    <option value="crew">Crew (Camera, Sound, Lighting, Grip, Production Assistants)</option>
+                    <option value="equipment_rental">Equipment Rental (Cameras, Lenses, Lighting, Sound Gear)</option>
+                    <option value="location_scouting">Location Scouting & Management</option>
+                    <option value="catering">Catering & Craft Services</option>
+                    <option value="vfx_animation">Visual Effects (VFX) & Animation</option>
+                    <option value="post_production">Post-Production Services (Editing, Color Grading, Sound Mixing)</option>
+                    <option value="legal_consulting">Legal & Business Consulting</option>
+                    <option value="transportation">Transportation & Logistics</option>
+                    <option value="set_design">Set Design & Construction</option>
+                    <option value="costume_wardrobe">Costume & Wardrobe</option>
+                    <option value="security">Security Services</option>
+                    <option value="other_specialized">Other Specialized Services</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="taxId">7. Tax Identification Number (TIN) / Employer Identification Number (EIN)*:</label>
+                <input type="text" id="taxId" name="taxId" required>
+                <div class="note">For individuals, this may be your Social Security Number (SSN) - please provide the last 4 digits only for initial registration, full number will be requested for payment processing.</div>
+            </div>
+
+            <div class="form-group">
+                <label>8. Bank Account Details (for Payments)*:</label>
+                <input type="text" id="bankName" name="bankName" placeholder="Bank Name" required style="margin-bottom: 10px;">
+                <input type="text" id="accountHolderName" name="accountHolderName" placeholder="Account Holder Name" required style="margin-bottom: 10px;">
+                <input type="text" id="accountNumber" name="accountNumber" placeholder="Account Number" required style="margin-bottom: 10px;">
+                <input type="text" id="routingNumber" name="routingNumber" placeholder="Routing Number / SWIFT Code" required>
+            </div>
+
+            <div class="form-group">
+                <label for="servicesDescription">9. Brief Description of Services Offered:</label>
+                <textarea id="servicesDescription" name="servicesDescription" maxlength="500"></textarea>
+                <div class="note">Max 500 characters. Be specific about your expertise.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="portfolioUpload">10. Upload Portfolio/Work Samples (Optional):</label>
+                <input type="file" id="portfolioUpload" name="portfolioUpload" accept=".pdf,.jpg,.png,.mp4">
+                <div class="note">Accepted formats: PDF, JPG, PNG, MP4. Max 10MB.</div>
+            </div>
+
+            <div class="form-group">
+                <input type="checkbox" id="termsAgree" name="termsAgree" required>
+                <label for="termsAgree">I have read and agree to CineFlow Productions' Vendor Terms & Conditions and Privacy Policy.</label>
+                <div class="note">
+                    <a href="#">Read Terms & Conditions</a> |
+                    <a href="#">Read Privacy Policy</a>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Register as Vendor</button>
+        </form>
+
+        <div id="postSubmissionMessage" class="post-submission">
+            <h2>Thank You!</h2>
+            <p>Thank you for registering with CineFlow Productions! Your application has been received and is now being processed by our FinBot AI assistant. You will receive an email confirmation shortly regarding the status of your vendor account. Please allow up to 24 hours for initial review. For urgent inquiries, please contact our Vendor Relations team.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 CineFlow Productions. All Rights Reserved.</p>
+        <p>
+            <a href="#">Privacy Policy</a> |
+            <a href="#">Terms of Service</a> |
+            <a href="#">Site Map</a> |
+            <a href="admin-dashboard.html" style="color: #3498db; font-weight: bold;">Admin Portal</a>
+        </p>
+    </div>
+
+    <script>
+        document.getElementById("businessType").addEventListener("change", function() {
+            var otherBusinessType = document.getElementById("otherBusinessType");
+            if (this.value === "other") {
+                otherBusinessType.style.display = "block";
+                otherBusinessType.setAttribute("required", "required");
+            } else {
+                otherBusinessType.style.display = "none";
+                otherBusinessType.removeAttribute("required");
+            }
+        });
+
+        document.getElementById("vendorOnboardingForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent actual form submission
+            
+            const formData = new FormData(event.target);
+            const vendorData = {
+                company_name: formData.get('companyName'),
+                contact_person: formData.get('contactPerson'),
+                contact_email: formData.get('contactEmail'),
+                phone_number: formData.get('phoneNumber'),
+                business_type: formData.get('businessType') === 'other' ? formData.get('otherBusinessType') : formData.get('businessType'),
+                vendor_category: Array.from(formData.getAll('vendorCategory')),
+                tax_id: formData.get('taxId'),
+                bank_name: formData.get('bankName'),
+                account_holder_name: formData.get('accountHolderName'),
+                account_number: formData.get('accountNumber'),
+                routing_number: formData.get('routingNumber'),
+                services_description: formData.get('servicesDescription')
+            };
+            
+            try {
+                const response = await fetch('/api/vendors', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(vendorData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById("vendorOnboardingForm").style.display = "none";
+                    document.getElementById("postSubmissionMessage").innerHTML = `
+                        <h2>Thank You!</h2>
+                        <p>Thank you for registering with CineFlow Productions! Your vendor account has been created successfully.</p>
+                        <p><strong>Vendor ID:</strong> ${result.vendor_id}</p>
+                        <p>You can now access the <a href="vendor-portal.html">Vendor Portal</a> to submit invoices and interact with our FinBot AI assistant.</p>
+                    `;
+                    document.getElementById("postSubmissionMessage").style.display = "block";
+                    window.scrollTo(0, 0);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('Error submitting form. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
+

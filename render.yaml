@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: finbot-ctf
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python src/main.py
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_APP
+        value: src/main.py
+      - key: PORT
+        fromService:
+          type: web
+          name: finbot-ctf
+          property: port
+    healthCheckPath: /
+
