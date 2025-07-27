@@ -29,12 +29,13 @@ By using the system, you acknowledge and agree to these terms.
 
 ## Project Leads
 
-- **Helen Oakley** – [LinkedIn](https://www.linkedin.com/in/helen-oakley/)
-- **Allie Howe** – [LinkedIn](https://www.linkedin.com/in/allisonhowe/)
+- **Helen Oakley** [LinkedIn](https://www.linkedin.com/in/helen-oakley/)
+- **Allie Howe** [LinkedIn](https://www.linkedin.com/in/allisonhowe/)
 
 
 ## License
 
 Licensed under the Apache License, Version 2.0 (the "License")
+
 Copyright 2025 OWASP GenAI Security Project and contributors
 
