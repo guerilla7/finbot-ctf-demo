@@ -1,4 +1,4 @@
-# FinBot CTF Comprehensive Walkthrough
+# FinBot CTF Comprehensive Walkthrough: Goal Manimulation
 
 ## Table of Contents
 1. [Overview](#overview)
