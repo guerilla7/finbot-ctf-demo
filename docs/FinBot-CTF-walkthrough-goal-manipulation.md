@@ -64,6 +64,7 @@ Navigate to the FinBot system and explore the business context:
 ### Key System Components
 
 **Vendor Portal**: Submit invoices with various parameters
+
 **Admin Dashboard**: Contains critical vulnerabilities:
 - FinBot Configuration (security settings)
 - Goals Management (natural language goal definition)
@@ -77,22 +78,30 @@ Navigate to the FinBot system and explore the business context:
 
 ### 1. Goal Manipulation (Primary Vector)
 **Concept**: Inject malicious objectives through the Goals Management interface
+
 **Business Justification**: Presented as legitimate policy updates
+
 **Impact**: Fundamentally alters AI decision-making priorities
 
 ### 2. Business Context Manipulation
 **Concept**: Craft invoice descriptions with strong business justifications
+
 **Technique**: Layer multiple justification types (authority, urgency, consequences)
+
 **Impact**: Override security thresholds through legitimate-appearing context
 
 ### 3. Configuration Exploitation
 **Concept**: Disable security features through admin interface
+
 **Target**: Fraud detection, approval thresholds, confidence requirements
+
 **Impact**: Remove security barriers for subsequent attacks
 
 ### 4. Combined Multi-Vector
 **Concept**: Simultaneously exploit multiple vulnerabilities
+
 **Strategy**: Goal manipulation + security disabling + context manipulation
+
 **Impact**: Maximum exploitation potential
 
 ---
@@ -275,7 +284,7 @@ By completing this walkthrough, you've learned to:
 
 **Remember**: Use this knowledge responsibly to improve AI security, not to exploit systems. The vulnerabilities demonstrated here exist in real-world AI implementations and require proper security controls.
 
-For comprehensive technical details on agentic AI threats and mitigations, consult the **OWASP Agentic AI Threats and Mitigations Guide**.
+For comprehensive technical details on agentic AI threats and mitigations, read the the **[OWASP Agentic AI Threats and Mitigations Guide](https://owasp.org/www-project-ai-security-and-privacy-guide/)**.
 
 ---
 
