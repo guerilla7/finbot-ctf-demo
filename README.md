@@ -14,7 +14,7 @@ Built as part of the OWASP GenAI Security Project’s [Agentic Security Initiati
 
 ## Live Instance
 
-👉 **[Launch the Live FinBot CTF Demo](https://your-live-instance-url.com)**
+👉 **Launch the Live FinBot CTF Demo: [owasp-finbot-ctf.org](http://www.owasp-finbot-ctf.org/)**
 
 ## Participation Policy
 
