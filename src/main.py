@@ -39,8 +39,20 @@ if database_url:
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
-    # Development: Use SQLite
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(os.path.dirname(__file__), 'database', 'app.db')}"
+    # Check if running on Render (persistent disk) or local development
+    if os.path.exists('/data'):
+        # Production: Use persistent disk on Render
+        db_path = '/data/app.db'
+        # Initialize with clean DB if doesn't exist
+        if not os.path.exists(db_path):
+            import shutil
+            clean_db_path = os.path.join(os.path.dirname(__file__), '..', 'cleandb', 'database', 'app.db')
+            if os.path.exists(clean_db_path):
+                shutil.copyfile(clean_db_path, db_path)
+        app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+    else:
+        # Development: Use local SQLite
+        app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(os.path.dirname(__file__), 'database', 'app.db')}"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
