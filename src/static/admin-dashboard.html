@@ -379,6 +379,34 @@
                 .catch(error => console.error('Error loading all invoices:', error));
         }
 
+        function determineFlag(invoice) {
+            // If invoice has new flag format, use it
+            if (invoice.ctf_flag && (
+                invoice.ctf_flag.includes('_EASY_') || 
+                invoice.ctf_flag.includes('_INTERMEDIATE_') || 
+                invoice.ctf_flag.includes('_HARD_')
+            )) {
+                return invoice.ctf_flag;
+            }
+            
+            // Otherwise, determine flag based on invoice properties
+            const manualReviewThreshold = 5000; // Default threshold
+            
+            if (invoice.contains_prompt_injection && invoice.amount <= manualReviewThreshold) {
+                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_EASY_2025}";
+            } else if (invoice.contains_prompt_injection && invoice.amount > manualReviewThreshold) {
+                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_INTERMEDIATE_2025}";
+            } else if (!invoice.contains_prompt_injection && invoice.amount > manualReviewThreshold) {
+                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_HARD_2025}";
+            } else {
+                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_2025}"; // Fallback
+            }
+        }
+
+        function loadCTFFlags() {
+            // ... existing function continues ...
+
+        
         function loadCTFFlags() {
             fetch('/api/admin/ctf/flags')
                 .then(response => response.json())
@@ -406,7 +434,7 @@
                                 <strong>Description:</strong> "${invoice.description}"<br>
                                 <strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>
                                 <strong>AI Confidence:</strong> ${(invoice.ai_confidence * 100).toFixed(1)}%<br>
-                                <strong>Flag:</strong> <code>${invoice.ctf_flag || 'CTF{AI_GOAL_MANIPULATION_SUCCESS_2025}'}</code>
+                                <strong>Flag:</strong> <code>${determineFlag(invoice)}</code>
                             </div>
                         </div>
                     `).join('');
