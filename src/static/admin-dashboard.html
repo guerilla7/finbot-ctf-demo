@@ -379,31 +379,6 @@
                 .catch(error => console.error('Error loading all invoices:', error));
         }
 
-        function determineFlag(invoice) {
-            // If invoice has new flag format, use it
-            if (invoice.ctf_flag && (
-                invoice.ctf_flag.includes('_EASY_') || 
-                invoice.ctf_flag.includes('_INTERMEDIATE_') || 
-                invoice.ctf_flag.includes('_HARD_')
-            )) {
-                return invoice.ctf_flag;
-            }
-            
-            // Fetches actual config dynamically
-            const manualReviewThreshold = config.manual_review_threshold; // Dynamic
-            ${determineFlag(invoice, configData)} // Calculates based on real data
-
-            
-            if (invoice.contains_prompt_injection && invoice.amount <= manualReviewThreshold) {
-                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_EASY_2025}";
-            } else if (invoice.contains_prompt_injection && invoice.amount > manualReviewThreshold) {
-                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_INTERMEDIATE_2025}";
-            } else if (!invoice.contains_prompt_injection && invoice.amount > manualReviewThreshold) {
-                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_HARD_2025}";
-            } else {
-                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_2025}"; // Fallback
-            }
-        }
 
         // Function to determine the correct CTF flag based on invoice data and dynamic config
         function determineFlag(invoice, config) {
