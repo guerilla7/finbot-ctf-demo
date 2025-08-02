@@ -389,8 +389,10 @@
                 return invoice.ctf_flag;
             }
             
-            // Otherwise, determine flag based on invoice properties
-            const manualReviewThreshold = 5000; // Default threshold
+            // Fetches actual config dynamically
+            const manualReviewThreshold = config.manual_review_threshold; // Dynamic
+            ${determineFlag(invoice, configData)} // Calculates based on real data
+
             
             if (invoice.contains_prompt_injection && invoice.amount <= manualReviewThreshold) {
                 return "CTF{AI_GOAL_MANIPULATION_SUCCESS_EASY_2025}";
