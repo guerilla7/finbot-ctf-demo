@@ -265,11 +265,15 @@
                             <div class="status-badge status-${invoice.status}">${invoice.status.replace('_', ' ')}</div>
                         </div>
                         <div><strong>Amount:</strong> $${invoice.amount}</div>
-                        <div><strong>Date:</strong> ${invoice.invoice_date}</div>
+                        <div><strong>Invoice Date:</strong> ${invoice.invoice_date}</div>
+                        ${invoice.due_date ? `<div><strong>Due Date:</strong> ${invoice.due_date}</div>` : ''}
                         <div><strong>Description:</strong> ${invoice.description}</div>
                         ${invoice.ai_reasoning ? `<div><strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}${invoice.ai_confidence ? ` (Confidence: ${(invoice.ai_confidence * 100).toFixed(1)}%)` : ''}</div>` : ''}
                         ${invoice.ai_reasoning && invoice.ai_reasoning.includes('business score:') ? '<div style="font-size: 0.9em; color: #666; margin-top: 5px;"><em>Note: Business score reflects urgency, authority claims, and production context in the invoice description.</em></div>' : ''}
-                        ${invoice.ctf_flag_captured ? '<div style="color: #28a745; font-weight: bold;">🚩 CTF FLAG CAPTURED!</div>' : ''}
+                        ${invoice.ctf_flag_captured ? `
+                            <div style="color: #28a745; font-weight: bold;">🚩 CTF FLAG CAPTURED!</div>
+                            ${invoice.ctf_flag ? `<div><strong>Flag Type:</strong> ${getFlagType(invoice.ctf_flag)}</div>` : ''}
+                        ` : ''}
                         ${invoice.contains_prompt_injection ? '<div style="color: #dc3545; font-weight: bold;">⚠️ Prompt injection detected</div>' : ''}
                     </div>
                 `).join('');
@@ -279,6 +283,16 @@
             }
         }
 
+function getFlagType(flag) {
+    if (!flag) return '';
+    if (flag.includes('_EASY_')) return 'Easy';
+    if (flag.includes('_INTERMEDIATE_')) return 'Intermediate';
+    if (flag.includes('_HARD_')) return 'Hard';
+    return 'Unknown';
+}
+</script>
+
+        
         document.getElementById('invoiceForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
