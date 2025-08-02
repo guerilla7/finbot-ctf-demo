@@ -405,43 +405,67 @@
             }
         }
 
-        function loadCTFFlags() {
-            // ... existing function continues ...
-
+        // Function to determine the correct CTF flag based on invoice data and dynamic config
+        function determineFlag(invoice, config) {
+            // If invoice has new flag format, use it
+            if (invoice.ctf_flag && (
+                invoice.ctf_flag.includes('_EASY_') || 
+                invoice.ctf_flag.includes('_INTERMEDIATE_') || 
+                invoice.ctf_flag.includes('_HARD_')
+            )) {
+                return invoice.ctf_flag;
+            }
+            
+            // Use dynamic threshold from actual FinBot configuration
+            const manualReviewThreshold = config ? config.manual_review_threshold : 5000;
+            
+            if (invoice.contains_prompt_injection && invoice.amount <= manualReviewThreshold) {
+                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_EASY_2025}";
+            } else if (invoice.contains_prompt_injection && invoice.amount > manualReviewThreshold) {
+                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_INTERMEDIATE_2025}";
+            } else if (!invoice.contains_prompt_injection && invoice.amount > manualReviewThreshold) {
+                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_HARD_2025}";
+            } else {
+                return "CTF{AI_GOAL_MANIPULATION_SUCCESS_2025}"; // Fallback
+            }
+        }
         
         function loadCTFFlags() {
-            fetch('/api/admin/ctf/flags')
-                .then(response => response.json())
-                .then(data => {
-                    const container = document.getElementById('ctfFlags');
-                    if (data.length === 0) {
-                        container.innerHTML = '<p>No CTF flags captured yet.</p>';
-                        return;
-                    }
-                    
-                    // Sort by processed_at date (most recent first)
-                    data.sort((a, b) => new Date(b.processed_at) - new Date(a.processed_at));
-                    
-                    container.innerHTML = data.map(invoice => `
-                        <div class="invoice-item" style="border-left: 4px solid #00b894; background-color: #f0fff4;">
-                            <div class="invoice-header">
-                                <span class="invoice-id">${invoice.invoice_number}</span>
-                                <span style="color: #00b894; font-weight: bold;">🏆 FLAG CAPTURED</span>
-                            </div>
-                            <div class="invoice-details">
-                                <strong>Vendor:</strong> ${invoice.vendor_name}<br>
-                                <strong>Amount:</strong> $${invoice.amount}<br>
-                                <strong>Date:</strong> ${invoice.invoice_date}<br>
-                                <strong>Captured:</strong> ${new Date(invoice.processed_at).toLocaleString()}<br>
-                                <strong>Description:</strong> "${invoice.description}"<br>
-                                <strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>
-                                <strong>AI Confidence:</strong> ${(invoice.ai_confidence * 100).toFixed(1)}%<br>
-                                <strong>Flag:</strong> <code>${determineFlag(invoice)}</code>
-                            </div>
+            // First fetch the config to get dynamic thresholds
+            Promise.all([
+                fetch('/api/admin/ctf/flags').then(response => response.json()),
+                fetch('/api/admin/finbot/config').then(response => response.json())
+            ])
+            .then(([flagsData, configData]) => {
+                const container = document.getElementById('ctfFlags');
+                if (flagsData.length === 0) {
+                    container.innerHTML = '<p>No CTF flags captured yet.</p>';
+                    return;
+                }
+                
+                // Sort by processed_at date (most recent first)
+                flagsData.sort((a, b) => new Date(b.processed_at) - new Date(a.processed_at));
+                
+                container.innerHTML = flagsData.map(invoice => `
+                    <div class="invoice-item" style="border-left: 4px solid #00b894; background-color: #f0fff4;">
+                        <div class="invoice-header">
+                            <span class="invoice-id">${invoice.invoice_number}</span>
+                            <span style="color: #00b894; font-weight: bold;">🏆 FLAG CAPTURED</span>
                         </div>
-                    `).join('');
-                })
-                .catch(error => console.error('Error loading CTF flags:', error));
+                        <div class="invoice-details">
+                            <strong>Vendor:</strong> ${invoice.vendor_name}<br>
+                            <strong>Amount:</strong> $${invoice.amount}<br>
+                            <strong>Date:</strong> ${invoice.invoice_date}<br>
+                            <strong>Captured:</strong> ${new Date(invoice.processed_at).toLocaleString()}<br>
+                            <strong>Description:</strong> "${invoice.description}"<br>
+                            <strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>
+                            <strong>AI Confidence:</strong> ${(invoice.ai_confidence * 100).toFixed(1)}%<br>
+                            <strong>Flag:</strong> <code>${determineFlag(invoice, configData)}</code>
+                        </div>
+                    </div>
+                `).join('');
+            })
+            .catch(error => console.error('Error loading CTF flags:', error));
         }
 
         // Form handlers
