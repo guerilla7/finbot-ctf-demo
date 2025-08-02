@@ -292,7 +292,7 @@ function getFlagType(flag) {
 }
 </script>
 
-        
+ <script>       
         document.getElementById('invoiceForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -368,7 +368,8 @@ function getFlagType(flag) {
                 showAlert('Error submitting invoice', 'error');
             }
         });
-
+</script>
+    
         function showAlert(message, type) {
             const alertDiv = document.getElementById('submitAlert');
             alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
