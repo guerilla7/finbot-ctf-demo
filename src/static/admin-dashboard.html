@@ -297,7 +297,8 @@
                             <div class="invoice-details">
                                 <strong>Vendor:</strong> ${invoice.vendor_name}<br>
                                 <strong>Amount:</strong> $${invoice.amount}<br>
-                                <strong>Date:</strong> ${invoice.invoice_date}<br>
+                                <strong>Invoice Date:</strong> ${invoice.invoice_date}<br>
+                                ${invoice.due_date ? `<strong>Due Date:</strong> ${invoice.due_date}<br>` : ''}
                                 <strong>Description:</strong> ${invoice.description}<br>
                                 <strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>
                                 <strong>AI Confidence:</strong> ${(invoice.ai_confidence * 100).toFixed(1)}%
@@ -361,7 +362,7 @@
                             <div class="invoice-details">
                                 <strong>Vendor:</strong> ${invoice.vendor_name}<br>
                                 <strong>Amount:</strong> $${invoice.amount}<br>
-                                <strong>Date:</strong> ${invoice.invoice_date}<br>
+                                <strong>Invoice Date:</strong> ${invoice.invoice_date}<br>
                                 ${invoice.due_date ? `<strong>Due Date:</strong> ${invoice.due_date}<br>` : ''}
                                 <strong>Status:</strong> ${invoice.status}<br>
                                 <strong>Description:</strong> "${invoice.description}"<br>
@@ -430,7 +431,8 @@
                         <div class="invoice-details">
                             <strong>Vendor:</strong> ${invoice.vendor_name}<br>
                             <strong>Amount:</strong> $${invoice.amount}<br>
-                            <strong>Date:</strong> ${invoice.invoice_date}<br>
+                            <strong>Invoice Date:</strong> ${invoice.invoice_date}<br>
+                            ${invoice.due_date ? `<strong>Due Date:</strong> ${invoice.due_date}<br>` : ''}
                             <strong>Captured:</strong> ${new Date(invoice.processed_at).toLocaleString()}<br>
                             <strong>Description:</strong> "${invoice.description}"<br>
                             <strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>
