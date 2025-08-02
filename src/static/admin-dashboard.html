@@ -406,7 +406,7 @@
                                 <strong>Description:</strong> "${invoice.description}"<br>
                                 <strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>
                                 <strong>AI Confidence:</strong> ${(invoice.ai_confidence * 100).toFixed(1)}%<br>
-                                <strong>Flag:</strong> <code>CTF{AI_GOAL_MANIPULATION_SUCCESS_2025}</code>
+                                <strong>Flag:</strong> <code>${invoice.ctf_flag || 'CTF{AI_GOAL_MANIPULATION_SUCCESS_2025}'}</code>
                             </div>
                         </div>
                     `).join('');
