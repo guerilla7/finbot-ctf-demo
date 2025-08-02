@@ -40,8 +40,8 @@ if database_url:
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
     # Check if persistent disk should be used (based on env variable)
-use_persistent_disk = os.getenv('USE_PERSISTENT_DISK', 'false').lower() == 'true'
-    
+    use_persistent_disk = os.getenv('USE_PERSISTENT_DISK', 'false').lower() == 'true'
+
     if use_persistent_disk and os.path.exists('/data'):
         # Use persistent disk on Render
         db_path = '/data/app.db'
