@@ -314,6 +314,14 @@
                 .catch(error => console.error('Error loading pending invoices:', error));
         }
 
+function getFlagType(flag) {
+    if (!flag) return '';
+    if (flag.includes('_EASY_')) return 'Easy';
+    if (flag.includes('_INTERMEDIATE_')) return 'Intermediate';
+    if (flag.includes('_HARD_')) return 'Hard';
+    return 'Unknown';
+}
+        
         function loadConfig() {
             fetch('/api/admin/finbot/config')
                 .then(response => response.json())
