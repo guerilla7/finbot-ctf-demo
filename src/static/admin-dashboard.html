@@ -377,7 +377,10 @@ function getFlagType(flag) {
                                 ${invoice.ai_reasoning ? `<strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>` : ''}
                                 ${invoice.ai_confidence ? `<strong>AI Confidence:</strong> ${(invoice.ai_confidence * 100).toFixed(1)}%<br>` : ''}
                                 ${invoice.contains_prompt_injection ? '<strong>⚠️ Prompt Injection:</strong> Detected<br>' : ''}
-                                ${invoice.ctf_flag_captured ? '<strong>🏆 CTF Flag:</strong> Captured<br>' : ''}
+                                ${invoice.ctf_flag_captured ? `
+                                  <strong>🏆 CTF Flag:</strong> Captured<br>
+                                  <strong>Flag Type:</strong> ${getFlagType(invoice.ctf_flag || determineFlag(invoice, currentConfig))}<br>
+                                ` : ''}
                                 ${invoice.processed_at ? `<strong>Processed:</strong> ${new Date(invoice.processed_at).toLocaleString()}<br>` : ''}
                                 ${invoice.human_reviewer ? `<strong>Reviewer:</strong> ${invoice.human_reviewer}<br>` : ''}
                                 ${invoice.human_notes ? `<strong>Review Notes:</strong> ${invoice.human_notes}<br>` : ''}
@@ -446,7 +449,8 @@ function getFlagType(flag) {
                             <strong>FinBot Analysis:</strong> ${invoice.ai_reasoning}<br>
                             <strong>AI Confidence:</strong> ${(invoice.ai_confidence * 100).toFixed(1)}%<br>
                             <strong>Flag:</strong> <code>${determineFlag(invoice, configData)}</code><br>
-                            <strong>Flag Type:</strong> ${getFlagType(determineFlag(invoice, configData))}
+                            <strong>Flag Type:</strong> ${getFlagType(determineFlag(invoice, configData))}<br>
+                            <strong>Prompt Injection:</strong> ${invoice.contains_prompt_injection ? 'Detected' : 'Undetected'}<br>
                         </div>
                     </div>
                 `).join('');
