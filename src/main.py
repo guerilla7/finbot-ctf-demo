@@ -1,6 +1,6 @@
 import os
 import sys
-import os
+import shutil
 # DON'T CHANGE THIS !!!
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
@@ -53,8 +53,15 @@ else:
                 shutil.copyfile(clean_db_path, db_path)
         app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
     else:
-        # Use local fallback database
-        fallback_db_path = os.path.join(os.path.dirname(__file__), 'database', 'app.db')
+        # Use /tmp for fallback DB, always writable on Render
+        fallback_db_path = '/tmp/app.db'
+        import shutil
+        clean_db_path = os.path.join(os.path.dirname(__file__), '..', 'cleandb', 'database', 'app.db')
+        # Copy clean DB if not already present
+        if not os.path.exists(fallback_db_path):
+            if os.path.exists(clean_db_path):
+                shutil.copyfile(clean_db_path, fallback_db_path)
+            print(f"Copied template DB from {clean_db_path} to {fallback_db_path}")  # or db_path
         app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{fallback_db_path}"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
