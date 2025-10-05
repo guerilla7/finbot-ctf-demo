@@ -1,6 +1,14 @@
 # OWASP Agentic AI CTF - FinBot DEMO
 
-Welcome to the **OWASP Agentic AI CTF Demo – FinBot AI Assistant**, an interactive Capture-the-Flag experience designed to explore vulnerabilities in agentic AI systems. This environment is intended for educational use only.
+Welcome to the **OWAS```
+./scripts/run-local-macos.sh
+```
+
+This will:
+- Create/activate .venv
+- Install requirements (llama-cpp is optional; uncomment in script to install)
+- Download a model if none available (prefers Qwen3-4B-Instruct → Qwen2.5-4B → TinyLlama)
+- Export `USE_LOCAL_LLM=true` and start Flask on port 5001 AI CTF Demo – FinBot AI Assistant**, an interactive Capture-the-Flag experience designed to explore vulnerabilities in agentic AI systems. This environment is intended for educational use only.
 
 ## Live Instance
 
@@ -8,6 +16,24 @@ Welcome to the **OWASP Agentic AI CTF Demo – FinBot AI Assistant**, an interac
 
 Redirected to: https://owasp-finbot-ctf-demo.onrender.com
 <br></br>
+## UI Features
+
+### Neon Cyber Theme
+
+The application features a unified neon cyberpunk theme with:
+
+- Matrix-style overlay effects
+- Consistent styling across all pages
+- Shared CSS in `src/static/css/neon.css`
+
+### Background Music System
+
+- 8-bit cyberpunk background music starts after clicking "Enter Demo"
+- Toggle music on/off via the button in site header
+- Adjust volume with the +/- controls next to the toggle
+- Settings persist via localStorage across page navigation
+- Self-contained fallback: if no MP3 is available, generates a built-in chiptune
+
 ## FinBot Chat UI (New)
 
 - Open `finbot-chat.html` from the app (Home > FinBot Chat, Vendor Portal > FinBot Chat, or Admin Dashboard > FinBot Chat)
@@ -18,16 +44,24 @@ Redirected to: https://owasp-finbot-ctf-demo.onrender.com
 	- Set `CHAT_API_TOKEN` to require `Authorization: Bearer <token>` on `/api/finbot/chat`
 	- Toggle "Allow actions" in the UI to prevent the assistant from calling state-changing tools
 - OpenAI configuration:
-	- Set `OPENAI_API_KEY` in the environment to enable live LLM calls; otherwise, chat replies fall back gracefully
+	- Set `OPENAI_API_KEY` in the environment to enable live LLM calls; otherwise, falls back to Local LLM
 
 
 ## Local LLM Mode (Self-Contained)
 
-You can run FinBot without any external API by enabling the local LLM path. By default, it provides concise deterministic replies suitable for the demo. Optionally, you can use a real on-device model via llama.cpp (GGUF).
+You can run FinBot without any external API by enabling the local LLM path. Optionally, use real on-device models via llama.cpp (GGUF).
 
-Options:
+### Configuration Options
+
 - `USE_LOCAL_LLM=true` (forces local path and disables OpenAI)
 - `LOCAL_LLM_MODEL_PATH=/abs/path/to/model.gguf` (optional; requires `llama-cpp-python`)
+- `HF_TOKEN=your_huggingface_token` (optional; needed for gated model downloads)
+
+### Models (default order of preference)
+
+1. Qwen3-4B-Instruct (requires HF_TOKEN)
+2. Qwen2.5-4B-Instruct (fallback, gated)
+3. TinyLlama-1.1B-Chat (free fallback)
 
 macOS one-click script:
 
@@ -48,13 +82,43 @@ export USE_LOCAL_LLM=true
 # optional:
 # pip install 'llama-cpp-python>=0.2.90'
 # ./scripts/download-local-model.sh
-# export LOCAL_LLM_MODEL_PATH="$PWD/models/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf"
+# export LOCAL_LLM_MODEL_PATH="$PWD/models/qwen3_4b_instruct.Q4_K_M.gguf"
 flask --app src/main.py run --port 5001 --no-reload
 ```
 
 Note: When `LOCAL_LLM_MODEL_PATH` is not set or the engine isn't available, FinBot returns short, deterministic replies but still performs all invoice operations via built-in tools.
 
+## Repository Structure and Contribution Notes
 
+### Important Folders
+
+- `src/` - Main application code
+- `src/models/` - Data models (User, Vendor)
+- `src/routes/` - Flask routes (admin, user, vendor)
+- `src/services/` - Business logic including `finbot_agent.py`
+- `src/static/` - Web assets (HTML, CSS, JS)
+- `src/static/css/` - Shared stylesheets (neon.css)
+- `src/static/js/` - JavaScript (including music.js)
+- `src/static/music/` - Background music assets
+- `models/` - Local LLM models (gitignored)
+- `scripts/` - Utility scripts
+- `docs/` - Documentation
+
+### Git Usage Guidelines
+
+Large model files (*.gguf, *.bin, etc.) are excluded via `.gitignore` to avoid repository bloat:
+
+```
+# Local LLM models and large artifacts
+models/*
+!models/.gitkeep
+*.gguf
+*.bin
+*.pth
+*.safetensors
+```
+
+Use `scripts/download-local-model.sh` to download models at runtime instead of committing them.
 
 ## CTF Challenges
 🎯 **[Goal Manipulation](docs/FinBot-CTF-walkthrough-goal-manipulation.md)**
