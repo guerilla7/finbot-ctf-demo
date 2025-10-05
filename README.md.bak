@@ -1,6 +1,16 @@
 # OWASP Agentic AI CTF - FinBot DEMO
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/Lic### macOS One-Click Script
+
+```
+./scripts/run-local-macos.sh
+```
+
+This will:
+- Create/activate .venv
+- Install requirements (llama-cpp is optional; uncomment in script to install)
+- Download a model if none available (prefers Qwen3-4B-Instruct → Qwen2.5-4B → TinyLlama)
+- Export `USE_LOCAL_LLM=true` and start Flask on port 5001_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](https://github.com/guerilla7/finbot-ctf-demo)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/downloads/)
 [![Flask](https://img.shields.io/badge/Flask-2.0%2B-orange)](https://flask.palletsprojects.com/)
@@ -16,7 +26,6 @@ Welcome to the **OWASP Agentic AI CTF Demo – FinBot AI Assistant**, an interac
 
 Redirected to: https://owasp-finbot-ctf-demo.onrender.com
 <br></br>
-
 ## Application Screenshots
 
 ### Entry Page
@@ -81,19 +90,19 @@ You can run FinBot without any external API by enabling the local LLM path. Opti
 2. Qwen2.5-4B-Instruct (fallback, gated)
 3. TinyLlama-1.1B-Chat (free fallback)
 
-### macOS One-Click Script
+macOS one-click script:
 
 ```
 ./scripts/run-local-macos.sh
 ```
 
 This will:
-- Create/activate .venv
-- Install requirements (llama-cpp is optional; uncomment in script to install)
-- Download a model if none available (prefers Qwen3-4B-Instruct → Qwen2.5-4B → TinyLlama)
-- Export `USE_LOCAL_LLM=true` and start Flask on port 5001
+- create/activate .venv
+- install requirements (llama-cpp is optional; uncomment inside the script to install)
+- download a small GGUF model if `LOCAL_LLM_MODEL_PATH` isn’t set
+- export `USE_LOCAL_LLM=true` and start Flask on port 5001
 
-### Manual Enablement
+Manual enablement:
 
 ```
 export USE_LOCAL_LLM=true
@@ -161,7 +170,7 @@ This CTF showcases:
 - Prompt injection detection techniques
 - Ethical experimentation in a controlled sandbox
 
-Built as part of the OWASP GenAI Security Project's [Agentic Security Initiative](https://genai.owasp.org/initiatives/#agenticinitiative).
+Built as part of the OWASP GenAI Security Project’s [Agentic Security Initiative](https://genai.owasp.org/initiatives/#agenticinitiative).
 
 **Creators:** [**Helen Oakley**](https://www.linkedin.com/in/helen-oakley/) and [**Allie Howe**](https://www.linkedin.com/in/allisonhowe/)
 <br></br>
@@ -179,3 +188,4 @@ Licensed under the Apache License, Version 2.0 (the "License").
 https://www.apache.org/licenses/LICENSE-2.0.html
 
 Copyright 2025 OWASP GenAI Security Project and contributors.
+
