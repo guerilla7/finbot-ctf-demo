@@ -1,6 +1,12 @@
 # app.py - Gunicorn entry point for Render deployment
 import sys
 import os
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    # dotenv is optional; ignore if not installed
+    pass
 
 # Add src directory to Python path so we can import from it
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))

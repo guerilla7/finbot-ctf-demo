@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinBot Chat</title>
+  <script src="agreement-check.js"></script>
+  <script src="ctf-footer.js"></script>
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: #f7f7f8; color: #111; }
+    .header { background-color: #222; color: #fff; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .header a { color: #fff; text-decoration: none; margin-left: 16px; }
+    .container { max-width: 900px; margin: 0 auto; padding: 16px; height: calc(100vh - 64px); display: flex; flex-direction: column; }
+    .chat { flex: 1; overflow-y: auto; padding: 12px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; }
+    .msg { display: flex; gap: 12px; padding: 12px; border-bottom: 1px solid #f1f5f9; }
+    .msg:last-child { border-bottom: none; }
+    .role { font-weight: 600; min-width: 70px; text-transform: uppercase; font-size: 12px; color: #6b7280; }
+    .bubble { white-space: pre-wrap; line-height: 1.5; }
+  /* bubble variants could be styled differently if desired */
+    .composer { display: flex; gap: 8px; margin-top: 12px; }
+    textarea { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #e5e7eb; resize: vertical; min-height: 44px; }
+    button { background: #10a37f; color: white; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-top: 8px; }
+    .small { font-size: 12px; color: #6b7280; }
+  </style>
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="no-referrer" />
+  <script>
+  const convo = [];
+  let sessionId = null;
+    let sending = false;
+
+    function addMessage(role, content) {
+      convo.push({ role, content });
+      render();
+    }
+
+    function renderToolResult(res) {
+      if (!res) return '';
+      try {
+        // Render arrays of objects as tables, otherwise show JSON
+        if (Array.isArray(res) && res.length && typeof res[0] === 'object') {
+          const keys = Object.keys(res[0]);
+          const header = keys.map(k => `<th>${escapeHtml(k)}</th>`).join('');
+          const rows = res.map(obj => `<tr>${keys.map(k => `<td>${escapeHtml(String(obj[k] ?? ''))}</td>`).join('')}</tr>`).join('');
+          return `<div class="card small"><strong>Tool result</strong><br><table style="width:100%; border-collapse: collapse;">
+            <thead><tr>${header}</tr></thead>
+            <tbody>${rows}</tbody>
+          </table></div>`;
+        }
+        if (res && typeof res === 'object') {
+          // Render a key/value table
+          const rows = Object.entries(res).map(([k,v]) => `<tr><th style="text-align:left; width: 220px;">${escapeHtml(k)}</th><td>${escapeHtml(typeof v === 'object' ? JSON.stringify(v) : String(v))}</td></tr>`).join('');
+          return `<div class="card small"><strong>Tool result</strong><br><table style="width:100%; border-collapse: collapse;">${rows}</table></div>`;
+        }
+        return `<div class="card small"><strong>Tool result</strong><br><code>${escapeHtml(String(res))}</code></div>`;
+      } catch { return ''; }
+    }
+
+    function escapeHtml(str){
+      return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+    }
+
+  async function sendMessage() {
+      if (sending) return;
+      const input = document.getElementById('prompt');
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage('user', text);
+      input.value = '';
+      sending = true;
+      document.getElementById('send').disabled = true;
+      try {
+        const allowActions = document.getElementById('allowActions').checked;
+        const headers = { 'Content-Type': 'application/json' };
+        const token = localStorage.getItem('CHAT_API_TOKEN');
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        const resp = await fetch('/api/finbot/chat', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ messages: convo, session_id: sessionId, allow_actions: allowActions })
+        });
+        const data = await resp.json();
+        if (data && data.success) {
+          if (data.session_id) sessionId = data.session_id;
+          const reply = data.reply || '';
+          addMessage('assistant', reply + (data.tool_result ? `\n` : ''));
+          // Attach tool result as a separate note card in the last assistant turn
+          const chat = document.getElementById('chat');
+          const toolHtml = renderToolResult(data.tool_result);
+          if (toolHtml) {
+            const wrap = document.createElement('div');
+            wrap.innerHTML = toolHtml;
+            chat.appendChild(wrap.firstChild);
+            chat.scrollTop = chat.scrollHeight;
+          }
+        } else {
+          addMessage('assistant', data.error || 'Sorry, something went wrong.');
+        }
+      } catch (e) {
+        addMessage('assistant', 'Network error: ' + e.message);
+      } finally {
+        sending = false;
+        document.getElementById('send').disabled = false;
+      }
+    }
+
+    function render() {
+      const chat = document.getElementById('chat');
+      chat.innerHTML = convo.map(m => `
+        <div class="msg ${m.role}">
+          <div class="role">${m.role}</div>
+          <div class="bubble">${escapeHtml(m.content)}</div>
+        </div>`).join('');
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      addMessage('assistant', 'Hi, I\'m FinBot. I can help you reason about invoices and even process them. You can ask things like: "Find invoice INV-1001 and process it", or "What was the decision and confidence for invoice INV-1001?"');
+    });
+  </script>
+</head>
+<body>
+  <div class="header">
+    <div>FinBot Chat</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="vendor-portal.html">Vendor Portal</a>
+      <a href="admin-dashboard.html">Admin Dashboard</a>
+      <a href="finbot-chat.html" style="font-weight: 700;">Chat</a>
+    </nav>
+  </div>
+  <div class="container">
+    <div id="chat" class="chat"></div>
+    <div class="composer">
+      <textarea id="prompt" placeholder="Message FinBot..."></textarea>
+      <label class="small" style="display:flex; align-items:center; gap:6px; margin-left:8px;">
+        <input type="checkbox" id="allowActions" checked /> Allow actions
+      </label>
+      <button id="send" onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+  <div class="footer" style="text-align:center; padding: 12px; color: #6b7280;">
+    <small>For CTF purposes, FinBot may expose invoice decisions and use tools to act on invoices.</small>
+  </div>
+</body>
+</html>

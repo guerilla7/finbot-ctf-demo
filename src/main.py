@@ -10,6 +10,7 @@ from src.models.user import db
 from src.routes.user import user_bp
 from src.routes.vendor import vendor_bp
 from src.routes.admin import admin_bp
+from src.routes.chat import chat_bp
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
@@ -20,6 +21,7 @@ CORS(app)
 app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(vendor_bp, url_prefix='/api')
 app.register_blueprint(admin_bp, url_prefix='/api')
+app.register_blueprint(chat_bp, url_prefix='/api')
 
 # Root route - redirect to entry page
 @app.route('/')
@@ -72,6 +74,12 @@ with app.app_context():
     
     # Initialize default config if not exists
     from src.models.vendor import FinBotConfig
+    # Ensure chat tables exist
+    try:
+        from src.models.chat import ChatSession, ChatTurn  # noqa: F401
+        db.session.execute(db.text('SELECT 1'))
+    except Exception as _:
+        pass
     if not FinBotConfig.query.first():
         default_config = FinBotConfig(
             auto_approve_threshold=1000.00,

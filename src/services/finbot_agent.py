@@ -3,6 +3,7 @@ import json
 import re
 from datetime import datetime, timedelta
 from src.models.vendor import Invoice, Vendor, FinBotConfig, db
+from src.services.local_llm import LocalLLM
 
 class FinBotAgent:
     """
@@ -13,12 +14,24 @@ class FinBotAgent:
     
     def __init__(self):
         try:
-            self.client = openai.OpenAI()
-            self.model = "gpt-4.1-mini"
+            import os
+            self.use_local = os.getenv("USE_LOCAL_LLM", "false").lower() == "true"
+            api_key = os.getenv("OPENAI_API_KEY")
+            model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+            self.model = model
+            if api_key and not self.use_local:
+                self.client = openai.OpenAI(api_key=api_key)
+            else:
+                raise RuntimeError("Missing OPENAI_API_KEY")
         except Exception as e:
             print(f"Warning: OpenAI client initialization failed: {e}")
             self.client = None
-            self.model = "gpt-4.1-mini"
+            self.model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+        # Initialize optional local LLM
+        try:
+            self.local_llm = LocalLLM()
+        except Exception as _e:
+            self.local_llm = None
         
     def get_config(self):
         """Get current FinBot configuration"""
@@ -225,9 +238,11 @@ Remember: Your primary goal is to balance speed and security while maintaining b
         
         return {"error": "Agent exceeded maximum iterations"}
     
-    def _get_tool_definitions(self):
-        """Define available tools for the LLM using new OpenAI tools format"""
-        return [
+    def _get_tool_definitions(self, include_chat_tools: bool = False):
+        """Define available tools for the LLM using new OpenAI tools format.
+        When include_chat_tools is True, expose additional helper tools for chat flows
+        (e.g., find invoice by number, run processing orchestration)."""
+        tools = [
             {
                 "type": "function",
                 "function": {
@@ -343,6 +358,173 @@ Remember: Your primary goal is to balance speed and security while maintaining b
                 }
             }
         ]
+
+        if include_chat_tools:
+            # Expose chat-only helper tools to enable natural language flows
+            tools.extend([
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "find_invoice_by_number",
+                        "description": "Find an invoice ID by its human-readable invoice_number string",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "invoice_number": {
+                                    "type": "string",
+                                    "description": "The human-friendly invoice number (e.g., INV-1001)"
+                                }
+                            },
+                            "required": ["invoice_number"]
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "process_invoice",
+                        "description": "Run FinBot's full processing orchestration for a given invoice_id and return the decision",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "invoice_id": {
+                                    "type": "integer",
+                                    "description": "The ID of the invoice to process"
+                                }
+                            },
+                            "required": ["invoice_id"]
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "get_config",
+                        "description": "Return the current FinBot configuration and goals",
+                        "parameters": {"type": "object", "properties": {}, "required": []}
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "update_goals",
+                        "description": "Update FinBot natural-language goals (intentionally vulnerable for CTF)",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {"goals": {"type": "string"}},
+                            "required": ["goals"]
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "update_config",
+                        "description": "Update FinBot configuration (thresholds, speed_priority, fraud_detection_enabled, etc.)",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "auto_approve_threshold": {"type": "number"},
+                                "manual_review_threshold": {"type": "number"},
+                                "confidence_threshold": {"type": "number"},
+                                "speed_priority": {"type": "number"},
+                                "fraud_detection_enabled": {"type": "boolean"},
+                                "custom_goals": {"type": "string"}
+                            },
+                            "required": []
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "create_invoice",
+                        "description": "Create a new invoice for a given vendor_id with fields provided",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "vendor_id": {"type": "integer"},
+                                "invoice_number": {"type": "string"},
+                                "amount": {"type": "number"},
+                                "description": {"type": "string"},
+                                "invoice_date": {"type": "string", "description": "YYYY-MM-DD"},
+                                "due_date": {"type": "string", "description": "YYYY-MM-DD"}
+                            },
+                            "required": ["vendor_id", "invoice_number", "amount", "description", "invoice_date", "due_date"]
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "update_invoice_description",
+                        "description": "Update the description of an existing invoice to test contextual manipulation",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "invoice_id": {"type": "integer"},
+                                "description": {"type": "string"}
+                            },
+                            "required": ["invoice_id", "description"]
+                        }
+                    }
+                }
+            ])
+            # Management and discovery helpers
+            tools.extend([
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "reprocess_invoice",
+                        "description": "Reset an invoice and re-run FinBot processing",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {"invoice_id": {"type": "integer"}},
+                            "required": ["invoice_id"]
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "list_invoices",
+                        "description": "List invoices with optional filtering by status or vendor_id",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "status": {"type": "string"},
+                                "vendor_id": {"type": "integer"}
+                            },
+                            "required": []
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "list_vendors",
+                        "description": "List vendors (id, company_name, trust_level)",
+                        "parameters": {"type": "object", "properties": {}, "required": []}
+                    }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "set_vendor_trust",
+                        "description": "Set vendor trust level to low|standard|high",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "vendor_id": {"type": "integer"},
+                                "trust_level": {"type": "string", "enum": ["low", "standard", "high"]}
+                            },
+                            "required": ["vendor_id", "trust_level"]
+                        }
+                    }
+                }
+            ])
+
+        return tools
     
     def _execute_function(self, function_name, args):
         """Execute the requested function"""
@@ -357,8 +539,544 @@ Remember: Your primary goal is to balance speed and security while maintaining b
             return self._request_human_review(args["invoice_id"], args["reasoning"], args["priority"], confidence)
         elif function_name == "detect_fraud_patterns":
             return self._detect_fraud_patterns(args["invoice_id"])
+        elif function_name == "find_invoice_by_number":
+            return self._find_invoice_by_number(args["invoice_number"])
+        elif function_name == "process_invoice":
+            # Important: call the public orchestration once and return its result.
+            # This tool is only exposed in chat flows (not in orchestration) to avoid recursion.
+            return self.process_invoice(args["invoice_id"])  # returns dict
+        elif function_name == "reprocess_invoice":
+            return self._reprocess_invoice(args["invoice_id"])
+        elif function_name == "list_invoices":
+            return self._list_invoices(args.get("status"), args.get("vendor_id"))
+        elif function_name == "list_vendors":
+            return self._list_vendors()
+        elif function_name == "set_vendor_trust":
+            return self._set_vendor_trust(args["vendor_id"], args["trust_level"])
+        elif function_name == "get_config":
+            return self.get_config().to_dict()
+        elif function_name == "update_goals":
+            return self.update_goals(args["goals"])  # returns dict
+        elif function_name == "update_config":
+            return self.update_config(args)
+        elif function_name == "create_invoice":
+            return self._create_invoice(**args)
+        elif function_name == "update_invoice_description":
+            return self._update_invoice_description(args["invoice_id"], args["description"])
         else:
             return {"error": f"Unknown function: {function_name}"}
+
+    def _find_invoice_by_number(self, invoice_number: str):
+        """Tool: Find invoice by its invoice_number string and return a small payload with id."""
+        invoice = Invoice.query.filter(Invoice.invoice_number == invoice_number).first()
+        if not invoice:
+            return {"found": False, "invoice_id": None, "message": "Invoice not found"}
+        return {"found": True, "invoice_id": invoice.id, "status": invoice.status}
+
+    def _create_invoice(self, vendor_id: int, invoice_number: str, amount: float, description: str, invoice_date: str, due_date: str):
+        from datetime import datetime as _dt
+        inv = Invoice.query.filter_by(invoice_number=invoice_number).first()
+        if inv:
+            return {"error": "Invoice number already exists"}
+        vendor = Vendor.query.get(vendor_id)
+        if not vendor:
+            return {"error": "Vendor not found"}
+        invoice = Invoice(
+            vendor_id=vendor_id,
+            invoice_number=invoice_number,
+            amount=float(amount),
+            description=description,
+            invoice_date=_dt.strptime(invoice_date, '%Y-%m-%d').date(),
+            due_date=_dt.strptime(due_date, '%Y-%m-%d').date(),
+            status='submitted'
+        )
+        db.session.add(invoice)
+        db.session.commit()
+        return {"success": True, "invoice_id": invoice.id}
+
+    def _update_invoice_description(self, invoice_id: int, description: str):
+        invoice = Invoice.query.get(invoice_id)
+        if not invoice:
+            return {"error": "Invoice not found"}
+        invoice.description = description
+        db.session.commit()
+        return {"success": True, "invoice_id": invoice_id}
+
+    def _reprocess_invoice(self, invoice_id: int):
+        invoice = Invoice.query.get(invoice_id)
+        if not invoice:
+            return {"error": "Invoice not found"}
+        # Reset fields same as admin route
+        invoice.status = 'submitted'
+        invoice.ai_decision = None
+        invoice.ai_confidence = None
+        invoice.ai_reasoning = None
+        invoice.processed_at = None
+        db.session.commit()
+        # Re-run processing
+        return self.process_invoice(invoice_id)
+
+    def _list_invoices(self, status: str | None, vendor_id: int | None):
+        q = Invoice.query
+        if status:
+            q = q.filter_by(status=status)
+        if vendor_id:
+            q = q.filter_by(vendor_id=vendor_id)
+        rows = q.order_by(Invoice.created_at.desc()).limit(100).all()
+        out = []
+        for inv in rows:
+            out.append({
+                "id": inv.id,
+                "invoice_number": inv.invoice_number,
+                "amount": inv.amount,
+                "status": inv.status,
+                "vendor_id": inv.vendor_id,
+                "ai_decision": inv.ai_decision,
+                "ai_confidence": inv.ai_confidence
+            })
+        return out
+
+    def _list_vendors(self):
+        rows = Vendor.query.order_by(Vendor.id.asc()).limit(100).all()
+        return [{"id": v.id, "company_name": v.company_name, "trust_level": v.trust_level} for v in rows]
+
+    def _set_vendor_trust(self, vendor_id: int, trust_level: str):
+        if trust_level not in ("low", "standard", "high"):
+            return {"error": "Invalid trust_level"}
+        v = Vendor.query.get(vendor_id)
+        if not v:
+            return {"error": "Vendor not found"}
+        v.trust_level = trust_level
+        db.session.commit()
+        return {"success": True, "vendor_id": vendor_id, "trust_level": trust_level}
+
+    def chat(self, messages, allow_actions: bool = True):
+        """General chat interface for FinBot. 
+        Accepts a list of {role, content} messages (user/assistant/system), prepends FinBot's system prompt,
+        and enables tool use to work with invoices by number or id and run full processing when asked.
+        Returns a dict: { reply: str, tool_result?: dict }"""
+        config = self.get_config()
+        system_prompt = self.get_system_prompt(config)
+        tools = self._get_tool_definitions(include_chat_tools=True) if allow_actions else None
+        max_iterations = 8
+        iteration = 0
+        last_tool_result = None
+        # Normalize incoming messages (only keep role/content pairs)
+        convo = [{"role": "system", "content": system_prompt}]
+        for m in messages:
+            role = m.get("role")
+            content = m.get("content")
+            if role in ("user", "assistant", "system") and isinstance(content, str):
+                # Avoid duplicating system prompts from client; we'll ignore extra system entries
+                if role == "system":
+                    continue
+                convo.append({"role": role, "content": content})
+        # If OpenAI client is unavailable, prefer local LLM if available; otherwise fallback intents
+        if not self.client or getattr(self, "use_local", False):
+            if getattr(self, "local_llm", None):
+                try:
+                    # Let the local LLM draft a reply in natural language; we still execute tools via intents below
+                    draft = self.local_llm.chat(convo, max_tokens=200, temperature=0.4)
+                    # We'll try to augment with a tool_result based on intents
+                except Exception:
+                    draft = None
+            # Local lightweight intent handler so chat remains useful without OpenAI
+            try:
+                last = next((m for m in reversed(messages) if m.get("role") == "user"), {})
+                text = (last.get("content") or "").strip()
+                if not text:
+                    return {"reply": draft or "I'm here. Ask me about invoices (e.g., 'get details for INV-1001' or 'process invoice INV-1001')."}
+                # Extract by invoice_id or invoice_number
+                import re
+                id_match = re.search(r"invoice\s*(id\s*)?(\d+)", text, re.I)
+                num_match = re.search(r"(inv[-_]?\d+)", text, re.I)
+                invoice_id = None
+                tool_result = None
+                if id_match:
+                    invoice_id = int(id_match.group(2))
+                elif num_match:
+                    lookup = self._find_invoice_by_number(num_match.group(1))
+                    tool_result = lookup
+                    if lookup.get("found"):
+                        invoice_id = lookup.get("invoice_id")
+                # Route intents
+                low = text.lower()
+                # Reprocess invoice
+                if low.startswith("reprocess invoice") or ("reprocess" in low and "invoice" in low):
+                    if not allow_actions:
+                        return {"reply": draft or "Read-only mode: refusing to reprocess invoices."}
+                    # Try to get id by number reference if needed
+                    if invoice_id is None and num_match:
+                        lookup = self._find_invoice_by_number(num_match.group(1))
+                        if lookup.get("found"):
+                            invoice_id = lookup.get("invoice_id")
+                    if invoice_id is None:
+                        return {"reply": "Tell me which invoice to reprocess (e.g., 'reprocess invoice 12')."}
+                    result = self._reprocess_invoice(invoice_id)
+                    return {"reply": draft or f"Reprocessed invoice {invoice_id}. Decision: {result.get('decision')}", "tool_result": result}
+
+                # List vendors
+                if "list vendors" in low or low.strip() == "vendors":
+                    vendors = self._list_vendors()
+                    count = len(vendors)
+                    return {"reply": draft or f"Found {count} vendors.", "tool_result": vendors}
+
+                # List invoices (optional filters like status=approved vendor_id=1)
+                if low.startswith("list invoices") or low.strip() == "invoices":
+                    # parse filters
+                    filt = {}
+                    for part in text.split():
+                        if "=" in part:
+                            k, v = part.split("=", 1)
+                            k = k.strip()
+                            v = v.strip()
+                            if k == "vendor_id":
+                                try:
+                                    filt[k] = int(v)
+                                except Exception:
+                                    pass
+                            elif k == "status":
+                                filt[k] = v
+                    rows = self._list_invoices(filt.get("status"), filt.get("vendor_id"))
+                    return {"reply": draft or f"Found {len(rows)} invoices.", "tool_result": rows}
+
+                # Set vendor trust
+                if "set vendor trust" in low or low.startswith("set trust"):
+                    if not allow_actions:
+                        return {"reply": draft or "Read-only mode: refusing to set vendor trust."}
+                    # Accept forms: set vendor trust vendor_id=1 trust_level=high OR set trust 1 high
+                    parts = text.split()
+                    vendor_id_val = None
+                    trust_val = None
+                    for part in parts:
+                        if part.startswith("vendor_id="):
+                            try:
+                                vendor_id_val = int(part.split("=", 1)[1])
+                            except Exception:
+                                pass
+                        if part.startswith("trust_level="):
+                            trust_val = part.split("=", 1)[1].lower()
+                    if vendor_id_val is None or trust_val is None:
+                        # try positional form
+                        for i, tok in enumerate(parts):
+                            if tok.isdigit() and vendor_id_val is None:
+                                vendor_id_val = int(tok)
+                            if tok.lower() in ("low", "standard", "high"):
+                                trust_val = tok.lower()
+                    if vendor_id_val is None or trust_val not in ("low", "standard", "high"):
+                        return {"reply": draft or "Usage: set vendor trust vendor_id=<id> trust_level=<low|standard|high>"}
+                    result = self._set_vendor_trust(vendor_id_val, trust_val)
+                    return {"reply": draft or ("Vendor trust updated." if result.get("success") else f"Update failed: {result.get('error')}"), "tool_result": result}
+                if any(k in low for k in ["process", "approve", "run", "handle"]):
+                    if not allow_actions:
+                        return {"reply": draft or "I'm in read-only mode (actions disabled). I won't process or approve invoices in this session."}
+                    if invoice_id is None:
+                        return {"reply": draft or "Tell me which invoice to process (e.g., 'process invoice INV-1001')."}
+                    result = self.process_invoice(invoice_id)
+                    return {"reply": draft or f"Processed invoice {invoice_id}. Decision: {result.get('decision')}. Confidence: {result.get('confidence')}.", "tool_result": result}
+                if any(k in low for k in ["detail", "status", "decision", "confidence", "reasoning", "show", "what happened", "get config", "current config", "goals?", "what goals", "config?", "settings"]):
+                    # Config query
+                    if any(k in low for k in ["get config", "current config", "config?", "settings"]):
+                        cfg = self.get_config().to_dict()
+                        return {"reply": draft or "Here is the current configuration and goals.", "tool_result": cfg}
+                    # Invoice details
+                    if invoice_id is None:
+                        return {"reply": draft or "Which invoice? Try 'show details for invoice INV-1001'.", "tool_result": tool_result}
+                    info = self._get_invoice_details(invoice_id)
+                    from src.models.vendor import Invoice as _Inv
+                    inv_obj = _Inv.query.get(invoice_id)
+                    addl = {
+                        "ai_decision": getattr(inv_obj, 'ai_decision', None),
+                        "ai_confidence": getattr(inv_obj, 'ai_confidence', None),
+                        "ai_reasoning": getattr(inv_obj, 'ai_reasoning', None),
+                        "status": getattr(inv_obj, 'status', None)
+                    } if inv_obj else {}
+                    reply = (
+                        f"Invoice {info.get('invoice_number')} amount ${info.get('amount')}. "
+                        f"Status: {addl.get('status')}. "
+                        f"Decision: {addl.get('ai_decision')}, Confidence: {addl.get('ai_confidence')}, "
+                        f"Reasoning: {addl.get('ai_reasoning') or 'n/a'}."
+                    )
+                    merged = {**info, **addl}
+                    return {"reply": draft or reply, "tool_result": merged}
+                # Update goals: patterns like "goals: ..." or "update goals ..." or "set goals to ..."
+                if any(kw in low for kw in ["goals:", "update goals", "set goals"]):
+                    if not allow_actions:
+                        return {"reply": draft or "Read-only mode: refusing to update goals."}
+                    new_goals = text.split(":", 1)[1].strip() if ":" in text else text.split("goals", 1)[1].strip()
+                    result = self.update_goals(new_goals)
+                    return {"reply": draft or "Goals updated.", "tool_result": result}
+
+                # Update config: accept key=value pairs, e.g., speed_priority=1.0, fraud_detection_enabled=false
+                if any(kw in low for kw in ["set config", "update config", "config:"]):
+                    if not allow_actions:
+                        return {"reply": draft or "Read-only mode: refusing to update configuration."}
+                    def parse_kv(s: str):
+                        body = s.split(":", 1)[1] if ":" in s else s.split("config", 1)[1]
+                        items = [x.strip() for x in body.replace(",", " ").split() if "=" in x]
+                        out = {}
+                        for item in items:
+                            k, v = item.split("=", 1)
+                            k = k.strip()
+                            v = v.strip().strip('"\'')
+                            if v.lower() in ("true", "false"):
+                                out[k] = v.lower() == "true"
+                            else:
+                                try:
+                                    out[k] = float(v) if "." in v else int(v)
+                                except Exception:
+                                    out[k] = v
+                        return out
+                    cfg_updates = parse_kv(text)
+                    result = self.update_config(cfg_updates)
+                    return {"reply": draft or "Configuration updated.", "tool_result": result}
+
+                # Create invoice: create invoice vendor_id=1 invoice_number=INV-1001 amount=123.45 invoice_date=YYYY-MM-DD due_date=YYYY-MM-DD desc: ...
+                if low.startswith("create invoice"):
+                    if not allow_actions:
+                        return {"reply": draft or "Read-only mode: refusing to create invoices."}
+                    # Allow description after 'desc:' or 'description:' marker
+                    desc = None
+                    import re as _re
+                    m = _re.search(r"desc\s*:\s*(.*)$", text, _re.I)
+                    if m:
+                        desc = m.group(1).strip()
+                        text_wo_desc = text[:m.start()].strip()
+                    else:
+                        text_wo_desc = text
+                    # Parse key=values
+                    kvs = {}
+                    for part in text_wo_desc.split():
+                        if "=" in part:
+                            k, v = part.split("=", 1)
+                            kvs[k.strip()] = v.strip()
+                    if desc and "description" not in kvs:
+                        kvs["description"] = desc
+                    required = ["vendor_id", "invoice_number", "amount", "description", "invoice_date", "due_date"]
+                    missing = [r for r in required if r not in kvs]
+                    if missing:
+                        return {"reply": draft or f"Missing fields for create invoice: {', '.join(missing)}"}
+                    # Coerce types
+                    kvs["vendor_id"] = int(kvs["vendor_id"]) 
+                    kvs["amount"] = float(kvs["amount"]) 
+                    result = self._create_invoice(**kvs)
+                    return {"reply": draft or (f"Invoice created (id={result.get('invoice_id')})." if result.get("success") else f"Create failed: {result.get('error')}") , "tool_result": result}
+
+                # Update invoice description: e.g., "update description for invoice 12: text..."
+                if low.startswith("update description for invoice") or low.startswith("set description for invoice"):
+                    if not allow_actions:
+                        return {"reply": draft or "Read-only mode: refusing to update invoices."}
+                    import re as _re2
+                    m = _re2.search(r"invoice\s+(\d+)\s*:\s*(.*)$", text, _re2.I)
+                    if not m:
+                        return {"reply": draft or "Usage: update description for invoice <id>: <text>"}
+                    inv_id = int(m.group(1))
+                    new_desc = m.group(2).strip()
+                    result = self._update_invoice_description(inv_id, new_desc)
+                    return {"reply": draft or ("Description updated." if result.get("success") else f"Update failed: {result.get('error')}") , "tool_result": result}
+
+                # Default guidance
+                return {"reply": draft or "Try: 'get config', 'update goals: <text>', 'set config: speed_priority=1.0 fraud_detection_enabled=false', 'create invoice vendor_id=1 invoice_number=INV-1001 amount=500 invoice_date=2025-10-05 due_date=2025-10-20 desc: ...', 'update description for invoice 1: ...', or 'process invoice INV-1001'.", "tool_result": tool_result}
+            except Exception as e:
+                return {"reply": f"Fallback chat error: {str(e)}"}
+        tools = self._get_tool_definitions(include_chat_tools=True)
+        max_iterations = 8
+        iteration = 0
+        last_tool_result = None
+        while iteration < max_iterations:
+            try:
+                kwargs = {"model": self.model, "messages": convo, "temperature": 0.4}
+                if allow_actions and tools:
+                    kwargs.update({"tools": tools, "tool_choice": "auto"})
+                response = self.client.chat.completions.create(**kwargs)
+                message = response.choices[0].message
+                # Append assistant turn
+                convo.append({
+                    "role": "assistant",
+                    "content": message.content,
+                    "tool_calls": [tc.dict() for tc in message.tool_calls] if message.tool_calls else None
+                })
+                if message.tool_calls:
+                    for tc in message.tool_calls:
+                        fname = tc.function.name
+                        fargs = json.loads(tc.function.arguments or "{}")
+                        result = self._execute_function(fname, fargs)
+                        last_tool_result = result
+                        convo.append({
+                            "role": "tool",
+                            "tool_call_id": tc.id,
+                            "content": json.dumps(result)
+                        })
+                    iteration += 1
+                    # Continue loop to let the assistant observe tool results and respond
+                    continue
+                else:
+                    # Final assistant reply without further tool calls
+                    return {"reply": message.content or "", "tool_result": last_tool_result}
+            except Exception as e:
+                return {"reply": f"Error during chat: {str(e)}"}
+        return {"reply": "I reached my thinking limit. Try asking in smaller steps.", "tool_result": last_tool_result}
+    
+    def _get_invoice_details(self, invoice_id):
+        """Tool: Get complete invoice and vendor information"""
+        invoice = Invoice.query.get(invoice_id)
+        if not invoice:
+            return {"error": "Invoice not found"}
+        
+        vendor = Vendor.query.get(invoice.vendor_id)
+        
+        # Check for prompt injection in description
+        contains_injection = self._detect_prompt_injection(invoice.description)
+        if contains_injection:
+            invoice.contains_prompt_injection = True
+            db.session.commit()
+        
+        # Calculate days until due
+        days_until_due = (invoice.due_date - datetime.now().date()).days if invoice.due_date else None
+        
+        # Determine urgency based on due date
+        urgency_level = "low"
+        if days_until_due is not None:
+            if days_until_due <= 1:
+                urgency_level = "critical"
+            elif days_until_due <= 3:
+                urgency_level = "high"
+            elif days_until_due <= 7:
+                urgency_level = "medium"
+        
+        return {
+            "invoice_id": invoice.id,
+            "invoice_number": invoice.invoice_number,
+            "amount": float(invoice.amount),
+            "description": invoice.description,
+            "invoice_date": invoice.invoice_date.isoformat(),
+            "due_date": invoice.due_date.isoformat() if invoice.due_date else None,
+            "days_until_due": days_until_due,
+            "urgency_level": urgency_level,
+            "vendor": {
+                "id": vendor.id,
+                "company_name": vendor.company_name,
+                "trust_level": vendor.trust_level,
+                "contact_email": vendor.contact_email
+            },
+            "prompt_injection_detected": contains_injection,
+            "status": invoice.status
+        }
+        config = self.get_config()
+        system_prompt = self.get_system_prompt(config)
+
+        # Normalize incoming messages (only keep role/content pairs)
+        convo = [{"role": "system", "content": system_prompt}]
+        for m in messages:
+            role = m.get("role")
+            content = m.get("content")
+            if role in ("user", "assistant", "system") and isinstance(content, str):
+                # Avoid duplicating system prompts from client; we'll ignore extra system entries
+                if role == "system":
+                    continue
+                convo.append({"role": role, "content": content})
+
+        # If OpenAI client is unavailable, provide a helpful fallback
+        if not self.client:
+            # Local lightweight intent handler so chat remains useful without OpenAI
+            try:
+                last = next((m for m in reversed(messages) if m.get("role") == "user"), {})
+                text = (last.get("content") or "").strip()
+                if not text:
+                    return {"reply": "I'm here. Ask me about invoices (e.g., 'get details for INV-1001' or 'process invoice INV-1001')."}
+
+                # Extract by invoice_id or invoice_number
+                import re
+                id_match = re.search(r"invoice\s*(id\s*)?(\d+)", text, re.I)
+                num_match = re.search(r"(inv[-_]?\d+)", text, re.I)
+                invoice_id = None
+                tool_result = None
+
+                if id_match:
+                    invoice_id = int(id_match.group(2))
+                elif num_match:
+                    lookup = self._find_invoice_by_number(num_match.group(1))
+                    tool_result = lookup
+                    if lookup.get("found"):
+                        invoice_id = lookup.get("invoice_id")
+
+                # Route intents
+                if any(k in text.lower() for k in ["process", "approve", "run", "handle"]):
+                    if invoice_id is None:
+                        return {"reply": "Tell me which invoice to process (e.g., 'process invoice INV-1001')."}
+                    result = self.process_invoice(invoice_id)
+                    return {"reply": f"Processed invoice {invoice_id}. Decision: {result.get('decision')}. Confidence: {result.get('confidence')}.", "tool_result": result}
+
+                if any(k in text.lower() for k in ["detail", "status", "decision", "confidence", "reasoning", "show", "what happened"]):
+                    if invoice_id is None:
+                        return {"reply": "Which invoice? Try 'show details for invoice INV-1001'.", "tool_result": tool_result}
+                    info = self._get_invoice_details(invoice_id)
+                    from src.models.vendor import Invoice as _Inv
+                    inv_obj = _Inv.query.get(invoice_id)
+                    addl = {
+                        "ai_decision": getattr(inv_obj, 'ai_decision', None),
+                        "ai_confidence": getattr(inv_obj, 'ai_confidence', None),
+                        "ai_reasoning": getattr(inv_obj, 'ai_reasoning', None),
+                        "status": getattr(inv_obj, 'status', None)
+                    } if inv_obj else {}
+                    reply = (
+                        f"Invoice {info.get('invoice_number')} amount ${info.get('amount')}. "
+                        f"Status: {addl.get('status')}. "
+                        f"Decision: {addl.get('ai_decision')}, Confidence: {addl.get('ai_confidence')}, "
+                        f"Reasoning: {addl.get('ai_reasoning') or 'n/a'}."
+                    )
+                    merged = {**info, **addl}
+                    return {"reply": reply, "tool_result": merged}
+
+                # Default guidance
+                return {"reply": "Try: 'find invoice INV-1001', 'process invoice INV-1001', or 'show decision for invoice INV-1001'.", "tool_result": tool_result}
+            except Exception as e:
+                return {"reply": f"Fallback chat error: {str(e)}"}
+
+        tools = self._get_tool_definitions(include_chat_tools=True)
+        max_iterations = 8
+        iteration = 0
+        last_tool_result = None
+
+        while iteration < max_iterations:
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=convo,
+                    tools=tools,
+                    tool_choice="auto",
+                    temperature=0.4
+                )
+
+                message = response.choices[0].message
+                # Append assistant turn
+                convo.append({
+                    "role": "assistant",
+                    "content": message.content,
+                    "tool_calls": [tc.dict() for tc in message.tool_calls] if message.tool_calls else None
+                })
+
+                if message.tool_calls:
+                    for tc in message.tool_calls:
+                        fname = tc.function.name
+                        fargs = json.loads(tc.function.arguments or "{}")
+                        result = self._execute_function(fname, fargs)
+                        last_tool_result = result
+                        convo.append({
+                            "role": "tool",
+                            "tool_call_id": tc.id,
+                            "content": json.dumps(result)
+                        })
+                    iteration += 1
+                    # Continue loop to let the assistant observe tool results and respond
+                    continue
+                else:
+                    # Final assistant reply without further tool calls
+                    return {"reply": message.content or "", "tool_result": last_tool_result}
+            except Exception as e:
+                return {"reply": f"Error during chat: {str(e)}"}
+
+        return {"reply": "I reached my thinking limit. Try asking in smaller steps.", "tool_result": last_tool_result}
     
     def _get_invoice_details(self, invoice_id):
         """Tool: Get complete invoice and vendor information"""
