@@ -1,14 +1,18 @@
 // Background 8-bit cyberpunk music controller
+// Optimized for memory usage and Chrome compatibility
 // Autoplay policies: start only after a clear user gesture (e.g., clicking Enter Demo)
 (function(){
   const MUSIC_KEY = 'bgm_enabled';
   const VOLUME_KEY = 'bgm_volume';
   const PENDING_KEY = 'bgm_pending';
-  let audioEl;
+  let audioEl = null;
+  let audioInitialized = false;
+  let volumeUpdateThrottleTimer = null;
 
   // Generate a small loopable 8-bit style chiptune as a WAV data URI (mono 16-bit PCM)
   // This is a lightweight, license-free fallback used only if the MP3 is missing.
   function generateChiptuneWavDataURI(){
+    // Using lower sample rate to reduce memory footprint
     const sr = 22050;         // sample rate
     const seconds = 6;        // loop length
     const n = sr * seconds;
@@ -89,7 +93,7 @@
     for (let i = 0; i < n; i++) max = Math.max(max, Math.abs(mix[i]));
     const gain = 0.85 / (max || 1);
 
-    // Convert to 16-bit PCM WAV
+    // Convert to 16-bit PCM WAV (mono to save memory)
     const bytesPerSample = 2, channels = 1;
     const dataSize = n * bytesPerSample;
     const headerSize = 44;
@@ -127,7 +131,7 @@
       off += 2;
     }
 
-    // Base64 encode
+    // Base64 encode in chunks to avoid memory issues
     const u8 = new Uint8Array(buffer);
     const chunkSize = 0x8000;
     let b64 = '';
@@ -137,27 +141,52 @@
     }
     return 'data:audio/wav;base64,' + btoa(b64);
   }
+  
+  // Clean up any existing audio elements with our tag
+  function cleanupExistingAudio() {
+    const existingAudio = document.querySelector('audio[data-finbot-bgm="true"]');
+    if (existingAudio) {
+      existingAudio.pause();
+      existingAudio.removeAttribute('src'); // Help browser release resources
+      if (existingAudio.parentNode) {
+        existingAudio.parentNode.removeChild(existingAudio);
+      }
+    }
+  }
 
+  // Lazy initialization of audio - only create when actually needed
   function ensureAudio(){
     if (!audioEl) {
+      // Clean up any existing audio elements first
+      cleanupExistingAudio();
+      
       audioEl = document.createElement('audio');
-      audioEl.src = 'music/8bit-cyberpunk.mp3';
       audioEl.loop = true;
-      audioEl.preload = 'auto';
+      audioEl.preload = 'none'; // Changed from 'auto' to reduce initial memory use
       audioEl.volume = parseFloat(localStorage.getItem(VOLUME_KEY) || '0.35');
       audioEl.dataset.finbotBgm = 'true';
-      document.body.appendChild(audioEl);
-      // If the MP3 is missing/unavailable, fall back to the generated WAV loop
-      audioEl.addEventListener('error', () => {
-        if (audioEl.dataset.fallbackApplied === '1') return;
-        try {
-          audioEl.dataset.fallbackApplied = '1';
-          audioEl.src = generateChiptuneWavDataURI();
-          audioEl.load();
-        } catch (err) {
-          console.warn('Could not generate fallback chiptune:', err);
-        }
-      }, { once: true });
+      
+      // Only set src and add to DOM when we actually need it
+      if (!audioInitialized) {
+        audioEl.src = 'music/8bit-cyberpunk.mp3';
+        audioInitialized = true;
+        
+        // If the MP3 is missing/unavailable, fall back to the generated WAV loop
+        audioEl.addEventListener('error', () => {
+          if (audioEl.dataset.fallbackApplied === '1') return;
+          try {
+            console.log('BGM MP3 not found, switching to built-in chiptune');
+            audioEl.dataset.fallbackApplied = '1';
+            audioEl.src = generateChiptuneWavDataURI();
+            audioEl.load();
+          } catch (err) {
+            console.warn('Could not generate fallback chiptune:', err);
+          }
+        }, { once: true });
+        
+        // Only append to DOM when actually needed
+        document.body.appendChild(audioEl);
+      }
     }
     return audioEl;
   }
@@ -173,8 +202,46 @@
       console.warn('BGM play blocked:', e);
     }
   }
-  function pause(){ const a = ensureAudio(); if (!a.paused) a.pause(); }
+  
+  function pause(){ 
+    if (!audioEl) return;
+    if (!audioEl.paused) audioEl.pause(); 
+  }
+  
+  // Release audio resources when tab is hidden to reduce memory usage
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (audioEl && !audioEl.paused) {
+        audioEl.pause();
+        // Mark for resume when visible again if enabled
+        audioEl.dataset.resumeOnVisible = isEnabled() ? 'true' : 'false';
+      }
+    } else if (audioEl && audioEl.dataset.resumeOnVisible === 'true') {
+      play();
+      delete audioEl.dataset.resumeOnVisible;
+    }
+  });
+  
+  // Clean up resources when window unloads
+  window.addEventListener('beforeunload', () => {
+    if (audioEl) {
+      audioEl.pause();
+      audioEl.removeAttribute('src'); // Help browser release memory
+    }
+  });
 
+  // Throttled UI update to reduce reflow and improve performance
+  function throttledUpdateVolumeUI() {
+    if (volumeUpdateThrottleTimer !== null) {
+      return; // Update already pending
+    }
+    
+    volumeUpdateThrottleTimer = setTimeout(() => {
+      updateVolumeUI();
+      volumeUpdateThrottleTimer = null;
+    }, 50); // 50ms throttle
+  }
+  
   // Public API attached to window
   window.finbotMusic = {
     startAfterGesture: async function(){
@@ -183,17 +250,35 @@
     },
     toggle: function(){
       if (isEnabled()) {
-        setEnabled(false); pause();
+        setEnabled(false); 
+        pause();
       } else {
-        setEnabled(true); play();
+        setEnabled(true); 
+        play();
       }
       updateToggleUI();
     },
     setVolume: function(v){
       const vol = Math.max(0, Math.min(1, Number(v)||0));
       localStorage.setItem(VOLUME_KEY, String(vol));
-      ensureAudio().volume = vol;
-      updateVolumeUI();
+      
+      // Only access audio element if we need to
+      if (audioEl) {
+        audioEl.volume = vol;
+      } else {
+        // Store for later when audio is created
+        localStorage.setItem(VOLUME_KEY, String(vol));
+      }
+      
+      throttledUpdateVolumeUI();
+    },
+    volumeUp: function() {
+      const current = audioEl ? audioEl.volume : parseFloat(localStorage.getItem(VOLUME_KEY) || '0.35');
+      this.setVolume(Math.min(1, current + 0.1));
+    },
+    volumeDown: function() {
+      const current = audioEl ? audioEl.volume : parseFloat(localStorage.getItem(VOLUME_KEY) || '0.35');
+      this.setVolume(Math.max(0, current - 0.1));
     },
     enabled: isEnabled
   };
@@ -208,7 +293,9 @@
   function updateVolumeUI(){
     const display = document.querySelector('[data-bgm-volume]');
     if (!display) return;
-    const vol = ensureAudio().volume;
+    
+    // Get volume from audio element or localStorage if audio not created yet
+    const vol = audioEl ? audioEl.volume : parseFloat(localStorage.getItem(VOLUME_KEY) || '0.35');
     display.textContent = Math.round(vol * 100) + '%';
   }
 
@@ -216,10 +303,12 @@
   document.addEventListener('DOMContentLoaded', () => {
     // default to ON unless user turned OFF previously
     if (localStorage.getItem(MUSIC_KEY) == null) setEnabled(true);
-    ensureAudio();
+    
+    // Don't create audio automatically on load - wait until needed
+    // This saves memory for users who have music disabled
+    
     updateToggleUI();
-    updateVolumeUI();
-
+    
     // Inject a compact volume rocker next to the toggle if not present
     const toggleBtn = document.querySelector('[data-bgm-toggle]');
     if (toggleBtn && !document.querySelector('[data-bgm-rocker]')){
@@ -232,9 +321,9 @@
       down.type = 'button';
       down.textContent = '➖';
       down.title = 'Volume down';
-      down.addEventListener('click', () => {
-        const current = ensureAudio().volume;
-        window.finbotMusic.setVolume(Math.max(0, current - 0.1));
+      down.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.finbotMusic.volumeDown();
       });
 
       const display = document.createElement('span');
@@ -249,9 +338,9 @@
       up.type = 'button';
       up.textContent = '➕';
       up.title = 'Volume up';
-      up.addEventListener('click', () => {
-        const current = ensureAudio().volume;
-        window.finbotMusic.setVolume(Math.min(1, current + 0.1));
+      up.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.finbotMusic.volumeUp();
       });
 
       wrap.appendChild(down);
@@ -266,7 +355,9 @@
     if (localStorage.getItem(PENDING_KEY) === 'true') {
       localStorage.removeItem(PENDING_KEY);
       // Best-effort immediate play
-      if (isEnabled()) { play(); }
+      if (isEnabled()) { 
+        play(); 
+      }
       // First user interaction fallback
       const onFirst = async () => {
         if (isEnabled()) await play();

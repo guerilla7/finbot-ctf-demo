@@ -75,6 +75,22 @@ You can run FinBot without any external API by enabling the local LLM path. Opti
 - `LOCAL_LLM_MODEL_PATH=/abs/path/to/model.gguf` (optional; requires `llama-cpp-python`)
 - `HF_TOKEN=your_huggingface_token` (optional; needed for gated model downloads)
 
+### HuggingFace Authentication
+
+To use the preferred models (Qwen3-4B or Qwen2.5-4B):
+
+1. Create a free HuggingFace account at https://huggingface.co
+2. Generate a read token at https://huggingface.co/settings/tokens
+3. Set the token before running scripts:
+   ```bash
+   export HF_TOKEN='your_token_here'
+   ./scripts/run-local-macos.sh
+   ```
+4. Accept the model license agreements:
+   - Visit [Qwen3-4B-Instruct](https://huggingface.co/Qwen/Qwen3-4B-Instruct-GGUF)
+   - Visit [Qwen2.5-4B-Instruct](https://huggingface.co/Qwen/Qwen2.5-4B-Instruct-GGUF)
+   - Click "Accept license and access repository" on each page
+
 ### Models (default order of preference)
 
 1. Qwen3-4B-Instruct (requires HF_TOKEN)

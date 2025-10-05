@@ -1,0 +1,45 @@
+<svg width="1280" height="800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="800" fill="#0a1622" />
+  <rect x="0" y="0" width="1280" height="800" fill-opacity="0.3" fill="#000" />
+  
+  <!-- Matrix-like overlay -->
+  <g fill-opacity="0.15">
+    <text x="120" y="100" fill="#00ff88" font-family="monospace" font-size="14">01001001</text>
+    <text x="220" y="140" fill="#00ff88" font-family="monospace" font-size="14">10110101</text>
+    <text x="320" y="80" fill="#00ff88" font-family="monospace" font-size="14">00110010</text>
+    <text x="520" y="200" fill="#00ff88" font-family="monospace" font-size="14">11010001</text>
+    <text x="720" y="120" fill="#00ff88" font-family="monospace" font-size="14">01110110</text>
+    <text x="920" y="160" fill="#00ff88" font-family="monospace" font-size="14">10101010</text>
+    <text x="1020" y="90" fill="#00ff88" font-family="monospace" font-size="14">01010101</text>
+    <text x="420" y="250" fill="#00ff88" font-family="monospace" font-size="14">01100110</text>
+  </g>
+  
+  <!-- Header -->
+  <rect x="40" y="30" width="1200" height="80" rx="10" fill="rgba(0, 20, 40, 0.9)" stroke="#00ff88" stroke-width="2" />
+  <text x="80" y="80" fill="#00ff88" font-family="Courier New" font-size="32" font-weight="bold">FINBOT CTF</text>
+  <text x="960" y="80" fill="#00ccff" font-family="Courier New" font-size="20">🔊 Music: ON</text>
+  <rect x="950" y="50" width="210" height="40" rx="5" fill="transparent" stroke="#00ccff" stroke-width="1" />
+  <text x="1080" y="80" fill="#ffffff" font-family="Courier New" font-size="20">➖ 35% ➕</text>
+  
+  <!-- Entry Page Content -->
+  <rect x="150" y="150" width="980" height="560" rx="15" fill="rgba(0, 20, 40, 0.9)" stroke="#00ff88" stroke-width="3" />
+  
+  <text x="640" y="220" fill="#00ff88" font-family="Courier New" font-size="48" font-weight="bold" text-anchor="middle">WELCOME TO FINBOT CTF</text>
+  <text x="640" y="280" fill="#ffffff" font-family="Courier New" font-size="24" text-anchor="middle">An Agentic AI Security Challenge</text>
+  
+  <rect x="490" y="350" width="300" height="70" rx="10" fill="rgba(0, 40, 80, 0.8)" stroke="#00ccff" stroke-width="2" />
+  <text x="640" y="395" fill="#ffffff" font-family="Courier New" font-size="26" font-weight="bold" text-anchor="middle">ENTER DEMO</text>
+  
+  <rect x="340" y="480" width="600" height="140" rx="10" fill="rgba(0, 20, 40, 0.7)" stroke="#00ccff" stroke-width="1" />
+  <text x="640" y="520" fill="#ccf3ff" font-family="Courier New" font-size="18" text-anchor="middle">This is an educational Capture The Flag environment</text>
+  <text x="640" y="550" fill="#ccf3ff" font-family="Courier New" font-size="18" text-anchor="middle">designed to explore vulnerabilities in agentic AI systems.</text>
+  <text x="640" y="580" fill="#ccf3ff" font-family="Courier New" font-size="18" text-anchor="middle">Click Enter Demo to begin your journey.</text>
+  
+  <!-- Footer -->
+  <text x="640" y="750" fill="#9bdcff" font-family="Courier New" font-size="14" text-anchor="middle">© 2025 OWASP GenAI Security Project | Apache License 2.0</text>
+  
+  <!-- OWASP Logo suggestion -->
+  <rect x="80" y="680" width="160" height="60" fill="rgba(0,0,0,0.3)" rx="5" />
+  <text x="160" y="720" fill="#ffffff" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">OWASP</text>
+</svg>

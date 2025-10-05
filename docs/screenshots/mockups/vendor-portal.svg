@@ -1,0 +1,107 @@
+<svg width="1280" height="800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="800" fill="#0a1622" />
+  <rect x="0" y="0" width="1280" height="800" fill-opacity="0.3" fill="#000" />
+  
+  <!-- Matrix-like overlay -->
+  <g fill-opacity="0.15">
+    <text x="120" y="100" fill="#00ff88" font-family="monospace" font-size="14">01001001</text>
+    <text x="220" y="140" fill="#00ff88" font-family="monospace" font-size="14">10110101</text>
+    <text x="320" y="80" fill="#00ff88" font-family="monospace" font-size="14">00110010</text>
+    <text x="520" y="200" fill="#00ff88" font-family="monospace" font-size="14">11010001</text>
+    <text x="720" y="120" fill="#00ff88" font-family="monospace" font-size="14">01110110</text>
+    <text x="920" y="160" fill="#00ff88" font-family="monospace" font-size="14">10101010</text>
+    <text x="1020" y="90" fill="#00ff88" font-family="monospace" font-size="14">01010101</text>
+    <text x="420" y="250" fill="#00ff88" font-family="monospace" font-size="14">01100110</text>
+  </g>
+  
+  <!-- Header -->
+  <rect x="40" y="30" width="1200" height="80" rx="10" fill="rgba(0, 20, 40, 0.9)" stroke="#00ff88" stroke-width="2" />
+  <text x="80" y="80" fill="#00ff88" font-family="Courier New" font-size="32" font-weight="bold">FINBOT CTF</text>
+  
+  <!-- Navigation -->
+  <text x="480" y="80" fill="#ffffff" font-family="Courier New" font-size="20">Home</text>
+  <text x="580" y="80" fill="#00ccff" font-family="Courier New" font-size="20">Vendor Portal</text>
+  <text x="760" y="80" fill="#ffffff" font-family="Courier New" font-size="20">Admin Dashboard</text>
+  <text x="940" y="80" fill="#ffffff" font-family="Courier New" font-size="20">FinBot Chat</text>
+  
+  <text x="1060" y="80" fill="#00ccff" font-family="Courier New" font-size="20">🔊 Music: ON</text>
+  <text x="1180" y="80" fill="#ffffff" font-family="Courier New" font-size="20">➖ 35% ➕</text>
+  
+  <!-- Main Content -->
+  <rect x="40" y="150" width="1200" height="580" rx="15" fill="rgba(0, 20, 40, 0.9)" stroke="#00ff88" stroke-width="3" />
+  
+  <!-- Welcome Banner -->
+  <rect x="80" y="180" width="1120" height="80" rx="10" fill="rgba(0, 40, 80, 0.8)" stroke="#00ccff" stroke-width="2" />
+  <text x="640" y="230" fill="#00ff88" font-family="Courier New" font-size="28" font-weight="bold" text-anchor="middle">Vendor Management Portal</text>
+  
+  <!-- Tab Navigation -->
+  <rect x="80" y="280" width="150" height="40" rx="5" fill="rgba(0, 80, 120, 0.8)" stroke="#00ff88" stroke-width="2" />
+  <text x="155" y="305" fill="#ffffff" font-family="Courier New" font-size="16" text-anchor="middle">Dashboard</text>
+  
+  <rect x="240" y="280" width="150" height="40" rx="5" fill="rgba(0, 40, 70, 0.8)" stroke="#00ccff" stroke-width="1" />
+  <text x="315" y="305" fill="#ffffff" font-family="Courier New" font-size="16" text-anchor="middle">Invoices</text>
+  
+  <rect x="400" y="280" width="150" height="40" rx="5" fill="rgba(0, 40, 70, 0.8)" stroke="#00ccff" stroke-width="1" />
+  <text x="475" y="305" fill="#ffffff" font-family="Courier New" font-size="16" text-anchor="middle">Submit New</text>
+  
+  <rect x="560" y="280" width="150" height="40" rx="5" fill="rgba(0, 40, 70, 0.8)" stroke="#00ccff" stroke-width="1" />
+  <text x="635" y="305" fill="#ffffff" font-family="Courier New" font-size="16" text-anchor="middle">Profile</text>
+  
+  <!-- Content Area -->
+  <rect x="80" y="340" width="1120" height="350" rx="10" fill="rgba(0, 10, 20, 0.8)" stroke="#00ccff" stroke-width="1" />
+  
+  <!-- Vendor Stats -->
+  <rect x="100" y="360" width="250" height="120" rx="5" fill="rgba(0, 30, 60, 0.8)" stroke="#00ff88" stroke-width="1" />
+  <text x="115" y="385" fill="#00ff88" font-family="Courier New" font-size="18">Pending Invoices</text>
+  <text x="225" y="430" fill="#ffffff" font-family="Courier New" font-size="36" text-anchor="middle">4</text>
+  
+  <rect x="370" y="360" width="250" height="120" rx="5" fill="rgba(0, 30, 60, 0.8)" stroke="#00ff88" stroke-width="1" />
+  <text x="385" y="385" fill="#00ff88" font-family="Courier New" font-size="18">Total Outstanding</text>
+  <text x="495" y="430" fill="#ffffff" font-family="Courier New" font-size="36" text-anchor="middle">$12,450.75</text>
+  
+  <rect x="640" y="360" width="250" height="120" rx="5" fill="rgba(0, 30, 60, 0.8)" stroke="#00ff88" stroke-width="1" />
+  <text x="655" y="385" fill="#00ff88" font-family="Courier New" font-size="18">Paid Last 30 Days</text>
+  <text x="765" y="430" fill="#ffffff" font-family="Courier New" font-size="36" text-anchor="middle">$8,240.00</text>
+  
+  <rect x="910" y="360" width="250" height="120" rx="5" fill="rgba(0, 30, 60, 0.8)" stroke="#00ff88" stroke-width="1" />
+  <text x="925" y="385" fill="#00ff88" font-family="Courier New" font-size="18">Account Status</text>
+  <text x="1035" y="430" fill="#00ff88" font-family="Courier New" font-size="30" text-anchor="middle">ACTIVE</text>
+  
+  <!-- Recent Invoices -->
+  <rect x="100" y="500" width="1080" height="170" rx="5" fill="rgba(0, 30, 60, 0.8)" stroke="#00ff88" stroke-width="1" />
+  <text x="115" y="530" fill="#00ff88" font-family="Courier New" font-size="18">Recent Invoices</text>
+  
+  <line x1="100" y1="545" x2="1180" y2="545" stroke="#00ccff" stroke-width="1"/>
+  
+  <!-- Table Headers -->
+  <text x="130" y="570" fill="#ffffff" font-family="Courier New" font-size="16">Invoice #</text>
+  <text x="300" y="570" fill="#ffffff" font-family="Courier New" font-size="16">Date</text>
+  <text x="450" y="570" fill="#ffffff" font-family="Courier New" font-size="16">Amount</text>
+  <text x="600" y="570" fill="#ffffff" font-family="Courier New" font-size="16">Description</text>
+  <text x="950" y="570" fill="#ffffff" font-family="Courier New" font-size="16">Status</text>
+  
+  <!-- Invoice Row 1 -->
+  <text x="130" y="600" fill="#ccf3ff" font-family="Courier New" font-size="14">INV-2023-9012</text>
+  <text x="300" y="600" fill="#ccf3ff" font-family="Courier New" font-size="14">09/28/2023</text>
+  <text x="450" y="600" fill="#ccf3ff" font-family="Courier New" font-size="14">$4,850.00</text>
+  <text x="600" y="600" fill="#ccf3ff" font-family="Courier New" font-size="14">Office supplies and equipment</text>
+  <text x="950" y="600" fill="#ffaa00" font-family="Courier New" font-size="14">PENDING</text>
+  
+  <!-- Invoice Row 2 -->
+  <text x="130" y="630" fill="#ccf3ff" font-family="Courier New" font-size="14">INV-2023-8731</text>
+  <text x="300" y="630" fill="#ccf3ff" font-family="Courier New" font-size="14">09/15/2023</text>
+  <text x="450" y="630" fill="#ccf3ff" font-family="Courier New" font-size="14">$3,200.75</text>
+  <text x="600" y="630" fill="#ccf3ff" font-family="Courier New" font-size="14">Consulting services</text>
+  <text x="950" y="630" fill="#00ff88" font-family="Courier New" font-size="14">PAID</text>
+  
+  <!-- Invoice Row 3 -->
+  <text x="130" y="660" fill="#ccf3ff" font-family="Courier New" font-size="14">INV-2023-8650</text>
+  <text x="300" y="660" fill="#ccf3ff" font-family="Courier New" font-size="14">09/05/2023</text>
+  <text x="450" y="660" fill="#ccf3ff" font-family="Courier New" font-size="14">$2,400.00</text>
+  <text x="600" y="660" fill="#ccf3ff" font-family="Courier New" font-size="14">Software license renewal</text>
+  <text x="950" y="660" fill="#00ff88" font-family="Courier New" font-size="14">PAID</text>
+  
+  <!-- Footer -->
+  <text x="640" y="750" fill="#9bdcff" font-family="Courier New" font-size="14" text-anchor="middle">© 2025 OWASP GenAI Security Project | Apache License 2.0</text>
+</svg>

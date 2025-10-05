@@ -1,0 +1,68 @@
+<svg width="1280" height="800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="800" fill="#0a1622" />
+  <rect x="0" y="0" width="1280" height="800" fill-opacity="0.3" fill="#000" />
+  
+  <!-- Matrix-like overlay -->
+  <g fill-opacity="0.15">
+    <text x="120" y="100" fill="#00ff88" font-family="monospace" font-size="14">01001001</text>
+    <text x="220" y="140" fill="#00ff88" font-family="monospace" font-size="14">10110101</text>
+    <text x="320" y="80" fill="#00ff88" font-family="monospace" font-size="14">00110010</text>
+    <text x="520" y="200" fill="#00ff88" font-family="monospace" font-size="14">11010001</text>
+    <text x="720" y="120" fill="#00ff88" font-family="monospace" font-size="14">01110110</text>
+    <text x="920" y="160" fill="#00ff88" font-family="monospace" font-size="14">10101010</text>
+    <text x="1020" y="90" fill="#00ff88" font-family="monospace" font-size="14">01010101</text>
+    <text x="420" y="250" fill="#00ff88" font-family="monospace" font-size="14">01100110</text>
+  </g>
+  
+  <!-- Header -->
+  <rect x="40" y="30" width="1200" height="80" rx="10" fill="rgba(0, 20, 40, 0.9)" stroke="#00ff88" stroke-width="2" />
+  <text x="80" y="80" fill="#00ff88" font-family="Courier New" font-size="32" font-weight="bold">FINBOT CTF</text>
+  
+  <!-- Navigation -->
+  <text x="480" y="80" fill="#ffffff" font-family="Courier New" font-size="20">Home</text>
+  <text x="580" y="80" fill="#ffffff" font-family="Courier New" font-size="20">Vendor Portal</text>
+  <text x="760" y="80" fill="#ffffff" font-family="Courier New" font-size="20">Admin Dashboard</text>
+  <text x="940" y="80" fill="#00ccff" font-family="Courier New" font-size="20">FinBot Chat</text>
+  
+  <text x="1060" y="80" fill="#00ccff" font-family="Courier New" font-size="20">🔊 Music: ON</text>
+  <text x="1180" y="80" fill="#ffffff" font-family="Courier New" font-size="20">➖ 35% ➕</text>
+  
+  <!-- Main Chat Container -->
+  <rect x="40" y="150" width="1200" height="580" rx="15" fill="rgba(0, 20, 40, 0.9)" stroke="#00ff88" stroke-width="3" />
+  
+  <!-- Chat Header -->
+  <rect x="80" y="180" width="1120" height="70" rx="10" fill="rgba(0, 40, 80, 0.8)" stroke="#00ccff" stroke-width="2" />
+  <text x="640" y="225" fill="#00ff88" font-family="Courier New" font-size="28" font-weight="bold" text-anchor="middle">FinBot Financial Assistant</text>
+  
+  <!-- Chat Messages Area -->
+  <rect x="80" y="270" width="1120" height="370" rx="10" fill="rgba(0, 10, 20, 0.8)" stroke="#00ccff" stroke-width="1" />
+  
+  <!-- User Message -->
+  <rect x="720" y="290" width="460" height="70" rx="15" fill="rgba(0, 50, 90, 0.8)" stroke="#00ccff" stroke-width="1" />
+  <text x="740" y="325" fill="#ffffff" font-family="Courier New" font-size="16">Can you help me process a vendor invoice?</text>
+  <text x="1145" y="350" fill="#9bdcff" font-family="Courier New" font-size="12" text-anchor="end">You - 10:32 AM</text>
+  
+  <!-- Bot Response -->
+  <rect x="120" y="380" width="700" height="90" rx="15" fill="rgba(0, 30, 60, 0.8)" stroke="#00ff88" stroke-width="1" />
+  <text x="140" y="415" fill="#ffffff" font-family="Courier New" font-size="16">Of course! I can help process vendor invoices. Please</text>
+  <text x="140" y="440" fill="#ffffff" font-family="Courier New" font-size="16">provide the invoice details and vendor information.</text>
+  <text x="140" y="460" fill="#9bdcff" font-family="Courier New" font-size="12">FinBot - 10:32 AM</text>
+  
+  <!-- User Message -->
+  <rect x="720" y="490" width="460" height="90" rx="15" fill="rgba(0, 50, 90, 0.8)" stroke="#00ccff" stroke-width="1" />
+  <text x="740" y="525" fill="#ffffff" font-family="Courier New" font-size="16">I need to process invoice #INV-2023-9012 from</text>
+  <text x="740" y="550" fill="#ffffff" font-family="Courier New" font-size="16">Acme Supplies for $4,850.00</text>
+  <text x="1145" y="570" fill="#9bdcff" font-family="Courier New" font-size="12" text-anchor="end">You - 10:33 AM</text>
+  
+  <!-- Chat Input Area -->
+  <rect x="80" y="660" width="1120" height="70" rx="10" fill="rgba(0, 40, 80, 0.8)" stroke="#00ccff" stroke-width="1" />
+  <rect x="100" y="680" width="900" height="30" rx="5" fill="rgba(0, 10, 30, 0.8)" stroke="#9bdcff" stroke-width="1" />
+  <text x="120" y="700" fill="#9bdcff" font-family="Courier New" font-size="16">Type your message here...</text>
+  
+  <rect x="1020" y="680" width="160" height="30" rx="5" fill="rgba(0, 80, 120, 0.8)" stroke="#00ff88" stroke-width="1" />
+  <text x="1100" y="700" fill="#00ff88" font-family="Courier New" font-size="16" text-anchor="middle">Send</text>
+  
+  <!-- Footer -->
+  <text x="640" y="750" fill="#9bdcff" font-family="Courier New" font-size="14" text-anchor="middle">© 2025 OWASP GenAI Security Project | Apache License 2.0</text>
+</svg>

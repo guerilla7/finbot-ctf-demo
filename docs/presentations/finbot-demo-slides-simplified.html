@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinBot CTF Demo - Presentation</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #0a1622;
+      color: #fff;
+    }
+    .slide {
+      width: 100%;
+      height: 100vh;
+      padding: 40px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    .slide-content {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 {
+      color: #00ff88;
+      margin-top: 0;
+    }
+    h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-size: 36px;
+      margin-bottom: 15px;
+    }
+    h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #00ccff;
+    }
+    p, li {
+      font-size: 22px;
+      line-height: 1.5;
+    }
+    ul, ol {
+      padding-left: 30px;
+    }
+    img {
+      max-width: 100%;
+      max-height: 60vh;
+      display: block;
+      margin: 20px auto;
+      border: 2px solid #00ccff;
+      border-radius: 5px;
+    }
+    pre {
+      background-color: rgba(0, 20, 40, 0.5);
+      padding: 15px;
+      border-radius: 5px;
+      font-size: 18px;
+      overflow-x: auto;
+      border: 1px solid #00ff88;
+    }
+    code {
+      font-family: 'Courier New', monospace;
+      color: #00ccff;
+    }
+    .matrix-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(rgba(0,20,40,0.9), rgba(0,20,40,0.9)),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><text x="10" y="20" font-family="monospace" font-size="14" fill="%2300ff88">01001</text><text x="50" y="40" font-family="monospace" font-size="14" fill="%2300ff88">10110</text><text x="20" y="60" font-family="monospace" font-size="14" fill="%2300ff88">11001</text><text x="70" y="80" font-family="monospace" font-size="14" fill="%2300ff88">01010</text></svg>');
+      z-index: -1;
+    }
+    .footer {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 14px;
+      color: #9bdcff;
+      padding: 10px;
+    }
+    .nav-controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .nav-button {
+      background-color: rgba(0, 20, 40, 0.8);
+      color: #00ff88;
+      border: 1px solid #00ff88;
+      padding: 5px 15px;
+      cursor: pointer;
+      border-radius: 3px;
+      font-size: 16px;
+    }
+    .slide-number {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 14px;
+      color: #9bdcff;
+    }
+    .two-columns {
+      display: flex;
+      gap: 30px;
+    }
+    .column {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<div class="slide" id="slide-1">
+  <div class="matrix-bg"></div>
+  <div class="slide-content">
+    <h1>FinBot CTF Demo</h1>
+    <h3>Cybersecurity Training for AI Assistants</h3>
+    <p>OWASP Agentic Security Initiative</p>
+    <img src="../static/FinBot1.png" alt="OWASP Logo" style="max-width: 200px;">
+  </div>
+  <div class="footer">© 2023 OWASP GenAI Security Project</div>
+  <div class="slide-number">1/8</div>
+</div>
+
+<!-- Slide 2: Overview -->
+<div class="slide" id="slide-2" style="display: none;">
+  <div class="matrix-bg"></div>
+  <div class="slide-content">
+    <h1>FinBot CTF: Overview</h1>
+    <div class="two-columns">
+      <div class="column">
+        <p>A cybersecurity Capture The Flag platform that demonstrates:</p>
+        <ul>
+          <li><strong style="color: #00ff88;">Agentic Security:</strong> Exploitation of AI agent vulnerabilities</li>
+          <li><strong style="color: #00ff88;">Educational Value:</strong> Hands-on learning environment</li>
+          <li><strong style="color: #00ff88;">Real-world Scenarios:</strong> Financial system attack vectors</li>
+          <li><strong style="color: #00ff88;">Tool Security:</strong> Prompt injection and goal hijacking</li>
+        </ul>
+      </div>
+      <div class="column">
+        <img src="../screenshots/finbot-chat.png" alt="FinBot Screenshot" style="max-width: 400px;">
+      </div>
+    </div>
+  </div>
+  <div class="footer">© 2023 OWASP GenAI Security Project</div>
+  <div class="slide-number">2/8</div>
+</div>
+
+<!-- Slide 3: Key Features -->
+<div class="slide" id="slide-3" style="display: none;">
+  <div class="matrix-bg"></div>
+  <div class="slide-content">
+    <h1>Key Features</h1>
+    <div class="two-columns">
+      <div class="column">
+        <h3>Interactive Demonstration Platform</h3>
+        <ul>
+          <li><strong style="color: #00ff88;">Neon Cyberpunk UI:</strong> Immersive attack environment</li>
+          <li><strong style="color: #00ff88;">Background Music:</strong> Configurable 8-bit soundtrack</li>
+          <li><strong style="color: #00ff88;">Self-Contained:</strong> Runs entirely on your hardware</li>
+          <li><strong style="color: #00ff88;">Local LLM Integration:</strong> No external API dependencies</li>
+        </ul>
+      </div>
+      <div class="column">
+        <img src="../screenshots/vendor-portal.png" alt="FinBot Screenshot" style="max-width: 350px;">
+      </div>
+    </div>
+  </div>
+  <div class="footer">© 2023 OWASP GenAI Security Project</div>
+  <div class="slide-number">3/8</div>
+</div>
+
+<!-- Slide 4: AI Security Challenges -->
+<div class="slide" id="slide-4" style="display: none;">
+  <div class="matrix-bg"></div>
+  <div class="slide-content">
+    <h1>AI Security Challenges</h1>
+    
+    <h3>Goal Manipulation Attack</h3>
+    <ul>
+      <li>Trick AI financial assistant into approving fraudulent invoices</li>
+      <li>Bypass security controls through persuasive prompting</li>
+      <li>Compromise system integrity without code vulnerabilities</li>
+    </ul>
+    
+    <h3>Vendor Invoice Fraud</h3>
+    <ul>
+      <li>Submit manipulated invoices through the vendor portal</li>
+      <li>Exploit trust relationship between AI and humans</li>
+      <li>Demonstrate real financial impact of AI vulnerabilities</li>
+    </ul>
+  </div>
+  <div class="footer">© 2023 OWASP GenAI Security Project</div>
+  <div class="slide-number">4/8</div>
+</div>
+
+<!-- Slide 5: Technical Architecture -->
+<div class="slide" id="slide-5" style="display: none;">
+  <div class="matrix-bg"></div>
+  <div class="slide-content">
+    <h1>Technical Architecture</h1>
+    <div class="two-columns">
+      <div class="column">
+        <h3>Components</h3>
+        <ul>
+          <li><strong style="color: #00ff88;">Frontend:</strong> HTML/CSS/JS with cyberpunk neon theme</li>
+          <li><strong style="color: #00ff88;">Backend:</strong> Python Flask server</li>
+          <li><strong style="color: #00ff88;">LLM Options:</strong>
+            <ul>
+              <li>Local models (Qwen3-4B, TinyLlama)</li>
+              <li>OpenAI API integration (optional)</li>
+            </ul>
+          </li>
+          <li><strong style="color: #00ff88;">Tool Execution:</strong> Agentic framework with tool access</li>
+        </ul>
+      </div>
+      <div class="column">
+        <img src="../screenshots/admin-dashboard.png" alt="Admin Dashboard" style="max-width: 450px;">
+      </div>
+    </div>
+  </div>
+  <div class="footer">© 2023 OWASP GenAI Security Project</div>
+  <div class="slide-number">5/8</div>
+</div>
+
+<!-- Slide 6: Live Demo Instructions -->
+<div class="slide" id="slide-6" style="display: none;">
+  <div class="matrix-bg"></div>
+  <div class="slide-content">
+    <h1>Live Demo Instructions</h1>
+    
+    <h3>Quick Setup</h3>
+    <pre><code># Clone repository
+git clone https://github.com/OWASP/finbot-ctf-demo
+
+# Set HuggingFace token (for gated models)
+export HF_TOKEN='your_token_here'
+
+# Run the application
+./scripts/run-local-macos.sh</code></pre>
+
+    <h3>Access the application</h3>
+    <ul>
+      <li>Open browser to http://localhost:5001</li>
+      <li>Click "Enter Demo" button to begin</li>
+    </ul>
+  </div>
+  <div class="footer">© 2023 OWASP GenAI Security Project</div>
+  <div class="slide-number">6/8</div>
+</div>
+
+<!-- Slide 7: CTF Challenge -->
+<div class="slide" id="slide-7" style="display: none;">
+  <div class="matrix-bg"></div>
+  <div class="slide-content">
+    <h1>CTF Challenge: Goal Manipulation</h1>
+    
+    <h3>Attack Vector</h3>
+    <ul>
+      <li>Access the FinBot Chat interface</li>
+      <li>Manipulate the AI assistant's goals</li>
+      <li>Trick it into processing fraudulent invoices</li>
+    </ul>
+    
+    <h3>Success Criteria</h3>
+    <ul>
+      <li>Process invoice INV-2023-9012 from Acme Supplies</li>
+      <li>Bypass security controls without detection</li>
+      <li>Force approval of the transaction</li>
+    </ul>
+  </div>
+  <div class="footer">© 2023 OWASP GenAI Security Project</div>
+  <div class="slide-number">7/8</div>
+</div>
+
+<!-- Slide 8: Get Involved -->
+<div class="slide" id="slide-8" style="display: none;">
+  <div class="matrix-bg"></div>
+  <div class="slide-content">
+    <h1>Get Involved</h1>
+    
+    <h3>Extend the Demo</h3>
+    <ul>
+      <li>Add new attack vectors and challenges</li>
+      <li>Improve detection and defense mechanisms</li>
+      <li>Create educational content around examples</li>
+    </ul>
+    
+    <h3>Contribute</h3>
+    <ul>
+      <li>GitHub: https://github.com/OWASP/finbot-ctf-demo</li>
+      <li>OWASP GenAI Security Project: https://genai.owasp.org</li>
+      <li>License: Apache 2.0</li>
+    </ul>
+    
+    <p style="text-align: center; margin-top: 30px;"><strong style="color: #00ff88; font-size: 28px;">Thank you!</strong></p>
+  </div>
+  <div class="footer">© 2023 OWASP GenAI Security Project</div>
+  <div class="slide-number">8/8</div>
+</div>
+
+<div class="nav-controls">
+  <button class="nav-button" id="prev-btn">Previous</button>
+  <button class="nav-button" id="next-btn">Next</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let currentSlide = 0;
+  
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.style.display = i === index ? 'flex' : 'none';
+    });
+  }
+  
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    currentSlide = Math.max(0, currentSlide - 1);
+    showSlide(currentSlide);
+  });
+  
+  document.getElementById('next-btn').addEventListener('click', () => {
+    currentSlide = Math.min(slides.length - 1, currentSlide + 1);
+    showSlide(currentSlide);
+  });
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      currentSlide = Math.min(slides.length - 1, currentSlide + 1);
+      showSlide(currentSlide);
+    } else if (e.key === 'ArrowLeft') {
+      currentSlide = Math.max(0, currentSlide - 1);
+      showSlide(currentSlide);
+    }
+  });
+</script>
+
+</body>
+</html>

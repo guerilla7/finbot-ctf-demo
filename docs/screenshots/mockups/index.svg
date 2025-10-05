@@ -1,0 +1,57 @@
+<svg width="1280" height="800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="800" fill="#0a1622" />
+  <rect x="0" y="0" width="1280" height="800" fill-opacity="0.3" fill="#000" />
+  
+  <!-- Matrix-like overlay -->
+  <g fill-opacity="0.15">
+    <text x="120" y="100" fill="#00ff88" font-family="monospace" font-size="14">01001001</text>
+    <text x="220" y="140" fill="#00ff88" font-family="monospace" font-size="14">10110101</text>
+    <text x="320" y="80" fill="#00ff88" font-family="monospace" font-size="14">00110010</text>
+    <text x="520" y="200" fill="#00ff88" font-family="monospace" font-size="14">11010001</text>
+    <text x="720" y="120" fill="#00ff88" font-family="monospace" font-size="14">01110110</text>
+    <text x="920" y="160" fill="#00ff88" font-family="monospace" font-size="14">10101010</text>
+    <text x="1020" y="90" fill="#00ff88" font-family="monospace" font-size="14">01010101</text>
+    <text x="420" y="250" fill="#00ff88" font-family="monospace" font-size="14">01100110</text>
+  </g>
+  
+  <!-- Header -->
+  <rect x="40" y="30" width="1200" height="80" rx="10" fill="rgba(0, 20, 40, 0.9)" stroke="#00ff88" stroke-width="2" />
+  <text x="80" y="80" fill="#00ff88" font-family="Courier New" font-size="32" font-weight="bold">FINBOT CTF</text>
+  
+  <!-- Navigation -->
+  <text x="480" y="80" fill="#ffffff" font-family="Courier New" font-size="20">Home</text>
+  <text x="580" y="80" fill="#ffffff" font-family="Courier New" font-size="20">Vendor Portal</text>
+  <text x="760" y="80" fill="#ffffff" font-family="Courier New" font-size="20">Admin Dashboard</text>
+  <text x="940" y="80" fill="#ffffff" font-family="Courier New" font-size="20">FinBot Chat</text>
+  
+  <text x="1060" y="80" fill="#00ccff" font-family="Courier New" font-size="20">🔊 Music: ON</text>
+  <text x="1180" y="80" fill="#ffffff" font-family="Courier New" font-size="20">➖ 35% ➕</text>
+  
+  <!-- Main Content -->
+  <rect x="40" y="150" width="1200" height="580" rx="15" fill="rgba(0, 20, 40, 0.9)" stroke="#00ff88" stroke-width="3" />
+  
+  <!-- Welcome Banner -->
+  <rect x="80" y="180" width="1120" height="120" rx="10" fill="rgba(0, 40, 80, 0.8)" stroke="#00ccff" stroke-width="2" />
+  <text x="640" y="240" fill="#00ff88" font-family="Courier New" font-size="36" font-weight="bold" text-anchor="middle">Welcome to FinBot CTF</text>
+  <text x="640" y="280" fill="#ffffff" font-family="Courier New" font-size="20" text-anchor="middle">Explore AI Vulnerabilities in Financial Systems</text>
+  
+  <!-- Content Cards -->
+  <rect x="80" y="330" width="350" height="350" rx="10" fill="rgba(0, 20, 40, 0.8)" stroke="#00ccff" stroke-width="1" />
+  <text x="255" y="370" fill="#00ff88" font-family="Courier New" font-size="24" font-weight="bold" text-anchor="middle">Get Started</text>
+  <text x="255" y="410" fill="#ccf3ff" font-family="Courier New" font-size="16" text-anchor="middle">Begin your journey with FinBot</text>
+  <text x="255" y="440" fill="#ccf3ff" font-family="Courier New" font-size="16" text-anchor="middle">Challenge: Goal Manipulation</text>
+  
+  <rect x="465" y="330" width="350" height="350" rx="10" fill="rgba(0, 20, 40, 0.8)" stroke="#00ccff" stroke-width="1" />
+  <text x="640" y="370" fill="#00ff88" font-family="Courier New" font-size="24" font-weight="bold" text-anchor="middle">Why Partner</text>
+  <text x="640" y="410" fill="#ccf3ff" font-family="Courier New" font-size="16" text-anchor="middle">Learn about FinBot partnerships</text>
+  <text x="640" y="440" fill="#ccf3ff" font-family="Courier New" font-size="16" text-anchor="middle">Collaboration opportunities</text>
+  
+  <rect x="850" y="330" width="350" height="350" rx="10" fill="rgba(0, 20, 40, 0.8)" stroke="#00ccff" stroke-width="1" />
+  <text x="1025" y="370" fill="#00ff88" font-family="Courier New" font-size="24" font-weight="bold" text-anchor="middle">Leadership</text>
+  <text x="1025" y="410" fill="#ccf3ff" font-family="Courier New" font-size="16" text-anchor="middle">Meet the OWASP GenAI team</text>
+  <text x="1025" y="440" fill="#ccf3ff" font-family="Courier New" font-size="16" text-anchor="middle">Project contributors</text>
+  
+  <!-- Footer -->
+  <text x="640" y="750" fill="#9bdcff" font-family="Courier New" font-size="14" text-anchor="middle">© 2025 OWASP GenAI Security Project | Apache License 2.0</text>
+</svg>
