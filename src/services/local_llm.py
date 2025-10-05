@@ -25,6 +25,18 @@ class LocalLLM:
         self.n_threads = int(os.getenv("LOCAL_LLM_THREADS", str(n_threads or os.cpu_count() or 4)))
         self._engine = None
         self._backend = None
+        # If no explicit path, try common defaults (prefer Qwen3-4B-Instruct if present)
+        if not self.model_path:
+            candidates = [
+                os.path.join(os.getcwd(), "models", "qwen3-4b-instruct-q4_k_m.gguf"),
+                os.path.join(os.getcwd(), "models", "Qwen3-4B-Instruct-Q4_K_M.gguf"),
+                os.path.join(os.getcwd(), "models", "qwen2.5-4b-instruct-q4_k_m.gguf"),
+                os.path.join(os.getcwd(), "models", "tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf"),
+            ]
+            for c in candidates:
+                if os.path.exists(c):
+                    self.model_path = c
+                    break
         self._init_engine()
 
     @property
@@ -57,8 +69,18 @@ class LocalLLM:
         """
         if self._backend == "llama-cpp" and self._engine is not None:
             try:
-                # llama.cpp supports structured chat with system/user/assistant
-                # We provide a compact prompt constructed from messages
+                # Prefer llama-cpp's chat completion when available (uses model chat template)
+                if hasattr(self._engine, "create_chat_completion"):
+                    out = self._engine.create_chat_completion(
+                        messages=messages,
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                        stop=["</s>"]
+                    )
+                    text = out.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+                    if text:
+                        return text
+                # Fallback: construct a simple prompt
                 prompt = []
                 system = ""
                 for m in messages:

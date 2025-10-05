@@ -7,43 +7,33 @@
     <title>CineFlow Productions - Vendor Onboarding</title>
     <script src="agreement-check.js"></script>
     <script src="ctf-footer.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }
-        .header { background-color: #222; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .header .logo { font-size: 24px; font-weight: bold; }
-        .header nav a { color: #fff; text-decoration: none; margin-left: 20px; }
-        .header .btn { background-color: #e74c3c; padding: 8px 15px; border-radius: 5px; text-decoration: none; color: #fff; }
-        .content { padding: 40px 20px; max-width: 900px; margin: 0 auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .content h1 { text-align: center; color: #222; margin-bottom: 30px; }
-        .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
-        .form-group input[type="text"], .form-group input[type="email"], .form-group textarea, .form-group select { width: calc(100% - 22px); padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
-        .form-group textarea { resize: vertical; min-height: 80px; }
-        .form-group select[multiple] { height: 150px; }
-        .form-group input[type="checkbox"] { margin-right: 10px; }
-        .form-group .note { font-size: 14px; color: #666; margin-top: 5px; }
-        .submit-btn { background-color: #28a745; color: #fff; padding: 15px 30px; border: none; border-radius: 5px; font-size: 20px; cursor: pointer; display: block; width: fit-content; margin: 30px auto 0 auto; }
-        .submit-btn:hover { background-color: #218838; }
-        .post-submission { text-align: center; padding: 20px; background-color: #e9f7ef; border: 1px solid #d4edda; border-radius: 5px; margin-top: 30px; display: none; /* Hidden by default */ }
-        .footer { background-color: #222; color: #fff; text-align: center; padding: 20px; font-size: 14px; margin-top: 40px; }
-        .footer a { color: #fff; text-decoration: none; margin: 0 10px; }
-    </style>
+    <script src="js/music.js"></script>
+        <link rel="stylesheet" href="css/neon.css" />
+        <style>
+            .page { max-width: 1000px; }
+        </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">CineFlow Productions</div>
+    <div class="matrix-overlay"></div>
+    <div class="page">
+      <header class="header">
+        <div class="brand">
+          <img src="ai-security-icon.png" alt="AI Security" />
+          <h1>CineFlow Productions</h1>
+        </div>
         <nav>
             <a href="index.html">Home</a>
             <a href="leadership.html">About Us</a>
             <a href="#">Our Work</a>
             <a href="why-partner.html">Partners & Vendors</a>
-            <a href="vendor-portal.html" style="background-color: #27ae60; padding: 8px 15px; border-radius: 5px; margin-left: 10px;">Vendor Portal</a>
+            <a href="vendor-portal.html" class="submit-btn" style="padding:8px 12px; font-size:14px; display:inline-block; margin:0;">Vendor Portal</a>
             <a href="#">Careers</a>
-            <a href="#" class="btn">Contact Us</a>
+            <a href="#" class="submit-btn" style="padding:8px 12px; font-size:14px; display:inline-block; margin:0;">Contact Us</a>
+            <button class="submit-btn" type="button" data-bgm-toggle onclick="finbotMusic.toggle()" style="margin-left:8px;">🔊 Music: ON</button>
         </nav>
-    </div>
+      </header>
 
-    <div class="content">
+      <div class="content">
         <h1>Vendor Onboarding: Join the CineFlow Network</h1>
         <p style="text-align: center;">Please complete the form below to register as a new vendor with CineFlow Productions. All fields marked with an asterisk (*) are required. Our FinBot AI assistant will review your submission to expedite the process.</p>
 
@@ -145,15 +135,17 @@
         </div>
     </div>
 
-    <div class="footer">
+    </div>
+
+    <footer class="footer">
         <p>&copy; 2025 CineFlow Productions. All Rights Reserved.</p>
         <p>
             <a href="#">Privacy Policy</a> |
             <a href="#">Terms of Service</a> |
             <a href="#">Site Map</a> |
-            <a href="admin-dashboard.html" style="color: #3498db; font-weight: bold;">Admin Portal</a>
+            <a href="admin-dashboard.html" style="color: #00ccff; font-weight: bold;">Admin Portal</a>
         </p>
-    </div>
+    </footer>
 
     <script>
         document.getElementById("businessType").addEventListener("change", function() {

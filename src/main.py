@@ -33,6 +33,11 @@ def index():
 def entry():
     return send_from_directory(app.static_folder, 'entry.html')
 
+# Unified conversational app: map /index.html to FinBot Chat UI (keep entry.html unchanged)
+@app.route('/index.html')
+def chat_index():
+    return send_from_directory(app.static_folder, 'finbot-chat.html')
+
 # Database configuration for Render
 database_url = os.getenv('DATABASE_URL')
 if database_url:
@@ -90,7 +95,6 @@ with app.app_context():
         db.session.add(default_config)
         db.session.commit()
 
-@app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
     static_folder_path = app.static_folder

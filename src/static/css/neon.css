@@ -1,0 +1,81 @@
+/* Neon Cyber Theme - shared styles */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --neon-green: #00ff88;
+  --neon-cyan: #00ccff;
+  --text-primary: #ccf3ff;
+  --text-muted: #9bdcff;
+  --panel-bg: rgba(0, 20, 40, 0.9);
+  --panel-bg-alt: rgba(0, 40, 80, 0.8);
+  --outline: #00ccff;
+  --outline-strong: #00ff88;
+}
+
+body {
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  background-image: url('../cyber-security-bg.png');
+  background-size: cover; background-attachment: fixed;
+  color: var(--neon-green);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.matrix-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1; }
+.page { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+/* Header + Nav */
+.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; margin-bottom: 20px; background: var(--panel-bg); border: 2px solid var(--neon-green); border-radius: 12px; box-shadow: 0 0 25px rgba(0,255,136,0.25); backdrop-filter: blur(10px); }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand img { width: 40px; height: 40px; filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.5)); }
+.brand h1 { font-size: 1.2rem; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,255,136,0.6); }
+nav a { color: var(--neon-cyan); text-decoration: none; margin-left: 16px; }
+nav a:hover { color: var(--neon-green); text-shadow: 0 0 10px rgba(0,255,136,0.8); }
+
+/* Panels / Cards */
+.panel { background: var(--panel-bg); border: 2px solid var(--outline); border-radius: 15px; padding: 20px; box-shadow: 0 0 30px rgba(0, 204, 255, 0.25); margin-bottom: 20px; color: var(--text-primary); }
+.panel.green { border-color: var(--neon-green); box-shadow: 0 0 30px rgba(0,255,136,0.25); }
+.card { background: var(--panel-bg-alt); border: 1px solid var(--outline); border-radius: 10px; padding: 10px; color: var(--text-primary); }
+.title { font-size: 1.2rem; color: var(--neon-green); margin-bottom: 10px; text-shadow: 0 0 10px rgba(0,255,136,0.6); }
+.subtitle { color: var(--neon-cyan); }
+.text { color: var(--text-primary); }
+.small { font-size: 12px; color: var(--text-muted); }
+
+/* Buttons */
+.btn, button { background: linear-gradient(45deg, var(--neon-green), var(--neon-cyan)); color: #000; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; letter-spacing: 0.5px; box-shadow: 0 0 20px rgba(0, 255, 136, 0.3); text-decoration: none; display: inline-block; }
+.btn:hover, button:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(0, 255, 136, 0.5); }
+.btn-danger { background: linear-gradient(45deg, #ff7b7b, #ff9f9f); color:#000; }
+.btn-success { background: linear-gradient(45deg, var(--neon-green), var(--neon-cyan)); color:#000; }
+
+/* Compact button variant for small controls (volume rocker) */
+.btn-compact { padding: 6px 10px; border-radius: 8px; font-weight: 700; }
+
+/* Forms */
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; margin-bottom: 6px; font-weight: bold; color: var(--text-muted); }
+.form-group input, .form-group textarea, .form-group select, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #00ccff66; background: rgba(0,0,0,0.5); color: #e0f7ff; }
+textarea { resize: vertical; }
+
+/* Tabs */
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid #00ccff33; margin-bottom: 16px; }
+.tab { padding: 10px 14px; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-muted); }
+.tab.active { border-bottom-color: var(--neon-green); color: var(--neon-green); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Alerts */
+.alert { padding: 12px 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #00ccff33; background: rgba(0,0,0,0.55); color: var(--text-primary); box-shadow: 0 0 18px rgba(0,204,255,0.15); }
+.alert-success { border-color: #00ff8866; background: linear-gradient(180deg, rgba(0,255,136,0.12), rgba(0,0,0,0.5)); color: #d8ffef; }
+.alert-error { border-color: #ff6b6b66; background: linear-gradient(180deg, rgba(255,107,107,0.12), rgba(0,0,0,0.5)); color: #ffe5e5; }
+.alert-warning { border-color: #ffd16666; background: linear-gradient(180deg, rgba(255,209,102,0.12), rgba(0,0,0,0.5)); color: #fff6e0; }
+
+/* Tables */
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #00ccff33; padding: 6px 8px; }
+th { background: rgba(0, 80, 120, 0.4); color: var(--text-muted); }
+
+/* Footer */
+.footer { text-align: center; color: var(--text-muted); font-size: 14px; padding: 20px; }
+.footer a { color: var(--neon-cyan); text-decoration: none; margin: 0 8px; }
+.footer a:hover { color: var(--neon-green); }
+
+/* Matrix rain helper (canvas overlay) optional container styles left to pages */

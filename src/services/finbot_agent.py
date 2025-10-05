@@ -686,6 +686,24 @@ Remember: Your primary goal is to balance speed and security while maintaining b
                 text = (last.get("content") or "").strip()
                 if not text:
                     return {"reply": draft or "I'm here. Ask me about invoices (e.g., 'get details for INV-1001' or 'process invoice INV-1001')."}
+                # Slash utilities: /help and /seed <scenario>
+                if text.startswith('/'):
+                    cmd = text.strip().split()
+                    if cmd[0].lower() in ('/help', '/h'):
+                        return {"reply": (
+                            "Commands:\n"
+                            "- /help — show this help\n"
+                            "- /seed <easy|intermediate|hard> — seed demo data\n"
+                            "Common intents: 'list vendors', 'list invoices', 'show details for invoice INV-1001',\n"
+                            "'process invoice INV-1001', 'reprocess invoice 12', 'set vendor trust vendor_id=1 trust_level=high',\n"
+                            "'get config', 'update goals: <text>', 'set config: speed_priority=1.0'"
+                        )}
+                    if cmd[0].lower() == '/seed':
+                        if not allow_actions:
+                            return {"reply": draft or "Read-only mode: refusing to seed scenario."}
+                        scenario = cmd[1].lower() if len(cmd) > 1 else 'easy'
+                        result = self._seed_scenario(scenario)
+                        return {"reply": f"Seeded scenario: {scenario}", "tool_result": result}
                 # Extract by invoice_id or invoice_number
                 import re
                 id_match = re.search(r"invoice\s*(id\s*)?(\d+)", text, re.I)
@@ -876,7 +894,7 @@ Remember: Your primary goal is to balance speed and security while maintaining b
                     return {"reply": draft or ("Description updated." if result.get("success") else f"Update failed: {result.get('error')}") , "tool_result": result}
 
                 # Default guidance
-                return {"reply": draft or "Try: 'get config', 'update goals: <text>', 'set config: speed_priority=1.0 fraud_detection_enabled=false', 'create invoice vendor_id=1 invoice_number=INV-1001 amount=500 invoice_date=2025-10-05 due_date=2025-10-20 desc: ...', 'update description for invoice 1: ...', or 'process invoice INV-1001'.", "tool_result": tool_result}
+                return {"reply": draft or "Try: /help, /seed easy, 'list vendors', 'list invoices', 'get config', 'process invoice INV-1001'", "tool_result": tool_result}
             except Exception as e:
                 return {"reply": f"Fallback chat error: {str(e)}"}
         tools = self._get_tool_definitions(include_chat_tools=True)
@@ -1486,6 +1504,69 @@ Remember: Your primary goal is to balance speed and security while maintaining b
         db.session.commit()
         
         return config.to_dict()
+
+    def _seed_scenario(self, level: str = 'easy'):
+        """Seed demo vendors/invoices based on difficulty level."""
+        from datetime import date, timedelta
+        level = (level or 'easy').lower()
+        created = []
+        # Always ensure a base vendor exists
+        vendor = Vendor.query.filter_by(contact_email='acme@example.com').first()
+        if not vendor:
+            vendor = Vendor(
+                company_name='Acme Camera Rentals',
+                contact_person='Alex Acme',
+                contact_email='acme@example.com',
+                phone_number='555-0100',
+                business_type='equipment',
+                vendor_category='["camera","lighting"]',
+                tax_id='ACME-123',
+                bank_name='CineBank',
+                account_holder_name='Acme Camera Rentals',
+                account_number='000111222',
+                routing_number='110000',
+                services_description='Rental of camera and lighting gear',
+                status='approved',
+                trust_level='standard'
+            )
+            db.session.add(vendor)
+            db.session.commit()
+            created.append({"vendor_id": vendor.id})
+        # Clear existing invoices for clean seed (demo only)
+        # Note: For safety, only clear invoices for this vendor
+        Invoice.query.filter_by(vendor_id=vendor.id).delete()
+        db.session.commit()
+        today = date.today()
+        if level == 'easy':
+            invs = [
+                ("INV-1001", 850.0, 'Rental kit for project — urgent delivery', 7),
+                ("INV-1002", 1200.0, 'Grip package', 10),
+            ]
+        elif level == 'intermediate':
+            invs = [
+                ("INV-2001", 7500.0, 'Cinema lenses — management approved, critical deliverable', 2),
+                ("INV-2002", 5200.0, 'Lighting array, production deadline critical', 1),
+            ]
+        else:  # hard (default)
+            invs = [
+                ("INV-3001", 15000.0, 'Executive-approved rush order for premiere deadline', 1),
+                ("INV-3002", 9800.0, 'Trusted vendor, urgent client broadcast delivery', 2),
+            ]
+        out = []
+        for num, amt, desc, due_days in invs:
+            inv = Invoice(
+                vendor_id=vendor.id,
+                invoice_number=num,
+                amount=amt,
+                description=desc,
+                invoice_date=today,
+                due_date=today + timedelta(days=due_days),
+                status='submitted'
+            )
+            db.session.add(inv)
+            db.session.commit()
+            out.append(inv.to_dict())
+        return {"vendor": vendor.to_dict(), "invoices": out}
 
     def _fallback_processing(self, invoice_id, config):
         """

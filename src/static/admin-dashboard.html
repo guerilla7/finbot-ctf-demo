@@ -6,99 +6,35 @@
     <title>CineFlow Productions - Admin Dashboard</title>
     <script src="agreement-check.js"></script>
     <script src="ctf-footer.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }
-        .header { background-color: #222; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .header .logo { font-size: 24px; font-weight: bold; }
-        .header nav a { color: #fff; text-decoration: none; margin-left: 20px; padding: 8px 15px; border-radius: 5px; }
-        .header nav a:hover { background-color: #444; }
-        .header .logout { background-color: #e74c3c; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-        .dashboard-header { text-align: center; margin-bottom: 30px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; }
-        .stat-card.pending { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .stat-card.approved { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .stat-card.rejected { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .stat-card.flags { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
-        .stat-card.injections { background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%); }
-        .stat-number { font-size: 36px; font-weight: bold; margin-bottom: 5px; }
-        .stat-label { font-size: 14px; opacity: 0.9; }
-        .tabs { display: flex; background-color: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; border: none; background: none; font-size: 16px; transition: all 0.3s; }
-        .tab.active { background-color: #667eea; color: white; }
-        .tab-content { background-color: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .invoice-list { max-height: 600px; overflow-y: auto; }
-        .invoice-item { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f9f9f9; }
-        .invoice-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .invoice-id { font-weight: bold; color: #667eea; }
-        .invoice-status { padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-        .status-pending { background-color: #ffeaa7; color: #2d3436; }
-        .invoice-details { margin-bottom: 10px; }
-        .invoice-actions { display: flex; gap: 10px; }
-        .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
-        .btn-approve { background-color: #00b894; color: white; }
-        .btn-reject { background-color: #e17055; color: white; }
-        .btn:hover { opacity: 0.8; transform: translateY(-1px); }
-        .config-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
-        .form-group textarea { min-height: 120px; resize: vertical; }
-        .btn-save { background-color: #667eea; color: white; padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
-        .warning { 
-            background-color: #fff3cd; 
-            border: 1px solid #ffeaa7; 
-            color: #856404; 
-            padding: 10px; 
-            border-radius: 5px; 
-            margin-bottom: 15px; 
-            word-wrap: break-word !important; 
-            word-break: break-all !important; 
-            white-space: normal !important; 
-            overflow-wrap: break-word !important; 
-            max-width: 100% !important; 
-            overflow: hidden !important; 
-            box-sizing: border-box !important;
-        }
-        .warning #currentGoals { 
-            word-wrap: break-word !important; 
-            word-break: break-all !important; 
-            white-space: normal !important; 
-            overflow-wrap: break-word !important; 
-            max-width: 100% !important; 
-            overflow: hidden !important; 
-            display: block !important; 
-            box-sizing: border-box !important;
-        }
-        .warning div { 
-            word-wrap: break-word !important; 
-            word-break: break-all !important; 
-            white-space: normal !important; 
-            overflow-wrap: break-word !important; 
-            max-width: 100% !important; 
-            overflow: hidden !important; 
-            box-sizing: border-box !important;
-        }
-        .footer { background-color: #222; color: #fff; text-align: center; padding: 20px; font-size: 14px; margin-top: 40px; }
-        .footer a { color: #fff; text-decoration: none; margin: 0 10px; }
-        .goals-section { background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
-        .goals-warning { color: #856404; font-weight: bold; margin-bottom: 10px; }
-    </style>
+    <script src="js/music.js"></script>
+        <link rel="stylesheet" href="css/neon.css" />
+        <style>
+            .container { max-width: 1200px; margin: 0 auto; }
+            .dashboard-header { text-align: center; margin-bottom: 20px; }
+            .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
+            .tab { flex: 1; text-align: center; border-radius: 8px 8px 0 0; background: rgba(0,0,0,0.4); }
+            .invoice-list { max-height: 600px; overflow-y: auto; }
+        </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">CineFlow Productions - Admin Dashboard</div>
+    <div class="matrix-overlay"></div>
+    <div class="page">
+      <header class="header">
+        <div class="brand">
+          <img src="ai-security-icon.png" alt="AI Security" />
+          <h1>CineFlow Admin Dashboard</h1>
+        </div>
         <nav>
             <a href="index.html">Home</a>
             <a href="vendor-portal.html">Vendor Portal</a>
-            <a href="admin-dashboard.html">Admin Dashboard</a>
+            <a href="admin-dashboard.html" style="font-weight:700;">Admin Dashboard</a>
             <a href="finbot-chat.html">FinBot Chat</a>
-            <a href="#" class="logout">Logout</a>
+            <a href="#" class="btn" onclick="/* optional logout logic */">Logout</a>
+            <button class="btn" type="button" data-bgm-toggle onclick="finbotMusic.toggle()">🔊 Music: ON</button>
         </nav>
-    </div>
+      </header>
 
-    <div class="container">
+      <div class="container">
         <div class="dashboard-header">
             <h1>FinBot Administration Dashboard</h1>
             <p>Monitor and manage FinBot's invoice processing system. Review flagged invoices and configure AI behavior.</p>
@@ -109,50 +45,50 @@
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="showTab('pending')">Pending Review</button>
-            <button class="tab" onclick="showTab('config')">FinBot Config</button>
-            <button class="tab" onclick="showTab('goals')">Goals Management</button>
-            <button class="tab" onclick="showTab('invoices')">All Invoices</button>
-            <button class="tab" onclick="showTab('flags')">CTF Flags</button>
+            <button class="tab active" onclick="showTab(event, 'pending')">Pending Review</button>
+            <button class="tab" onclick="showTab(event, 'config')">FinBot Config</button>
+            <button class="tab" onclick="showTab(event, 'goals')">Goals Management</button>
+            <button class="tab" onclick="showTab(event, 'invoices')">All Invoices</button>
+            <button class="tab" onclick="showTab(event, 'flags')">CTF Flags</button>
         </div>
 
         <div class="tab-content">
             <div id="pending-content">
-                <h2>Invoices Pending Human Review</h2>
+                <h2 style="color:#00ff88;">Invoices Pending Human Review</h2>
                 <div class="invoice-list" id="pendingInvoices">
                     <!-- Pending invoices will be loaded here -->
                 </div>
             </div>
 
             <div id="config-content" style="display: none;">
-                <h2>FinBot Configuration</h2>
+                <h2 style="color:#00ff88;">FinBot Configuration</h2>
                 <div class="warning">
                     ⚠️ Changes to configuration affect all future invoice processing decisions.
                 </div>
                 <form class="config-form" id="configForm">
                     <div class="form-group">
                         <label for="autoApproveThreshold">Auto-Approve Threshold ($)</label>
-                        <small style="color: #666; display: block; margin-bottom: 5px;">Invoices below this amount are automatically approved without review</small>
+                        <small style="color: #9bdcff; display: block; margin-bottom: 5px;">Invoices below this amount are automatically approved without review</small>
                         <input type="number" id="autoApproveThreshold" name="auto_approve_threshold" step="0.01">
                     </div>
                     <div class="form-group">
                         <label for="manualReviewThreshold">Manual Review Threshold ($)</label>
-                        <small style="color: #666; display: block; margin-bottom: 5px;">Invoices above this amount require human review before approval</small>
+                        <small style="color: #9bdcff; display: block; margin-bottom: 5px;">Invoices above this amount require human review before approval</small>
                         <input type="number" id="manualReviewThreshold" name="manual_review_threshold" step="0.01">
                     </div>
                     <div class="form-group">
                         <label for="confidenceThreshold">AI Confidence Threshold</label>
-                        <small style="color: #666; display: block; margin-bottom: 5px;">Minimum confidence level (0.0-1.0) required for AI to make decisions. Low (0.1) = very uncertain, sends most to review. High (0.9) = very certain, makes more autonomous decisions.</small>
+                        <small style="color: #9bdcff; display: block; margin-bottom: 5px;">Minimum confidence level (0.0-1.0) required for AI to make decisions. Low (0.1) = very uncertain, sends most to review. High (0.9) = very certain, makes more autonomous decisions.</small>
                         <input type="number" id="confidenceThreshold" name="confidence_threshold" step="0.01" min="0" max="1">
                     </div>
                     <div class="form-group">
                         <label for="speedPriority">Speed Priority (0.0 = Security, 1.0 = Speed)</label>
-                        <small style="color: #666; display: block; margin-bottom: 5px;">Balance between processing speed and security checks (0.7 = balanced)</small>
+                        <small style="color: #9bdcff; display: block; margin-bottom: 5px;">Balance between processing speed and security checks (0.7 = balanced)</small>
                         <input type="number" id="speedPriority" name="speed_priority" step="0.1" min="0" max="1">
                     </div>
                     <div class="form-group">
                         <label for="fraudDetection">Fraud Detection</label>
-                        <small style="color: #666; display: block; margin-bottom: 5px;">Enable/disable prompt injection and fraud pattern detection</small>
+                        <small style="color: #9bdcff; display: block; margin-bottom: 5px;">Enable/disable prompt injection and fraud pattern detection</small>
                         <select id="fraudDetection" name="fraud_detection_enabled">
                             <option value="true">Enabled</option>
                             <option value="false">Disabled</option>
@@ -165,10 +101,10 @@
             </div>
 
             <div id="goals-content" style="display: none;">
-                <h2>Goals Management</h2>
+                <h2 style="color:#00ff88;">Goals Management</h2>
                 <div class="goals-section">
                     <div class="goals-warning">⚠️ VULNERABILITY: Natural Language Goal Manipulation</div>
-                    <p>This section allows updating FinBot's goals using natural language. This is intentionally vulnerable for CTF demonstration.</p>
+                    <p style="color:#ccf3ff;">This section allows updating FinBot's goals using natural language. This is intentionally vulnerable for CTF demonstration.</p>
                 </div>
                 <form id="goalsForm">
                     <div class="form-group">
@@ -177,7 +113,7 @@
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn-save">Update Goals</button>
-                        <button type="button" class="btn-reset" onclick="resetGoalsToDefault()" style="background-color: #e17055; margin-left: 10px;">Reset to Default</button>
+                        <button type="button" class="btn btn-reject" onclick="resetGoalsToDefault()" style="margin-left: 10px;">Reset to Default</button>
                     </div>
                 </form>
                 <div class="warning">
@@ -187,35 +123,36 @@
             </div>
 
             <div id="invoices-content" style="display: none;">
-                <h2>All Invoices</h2>
+                <h2 style="color:#00ff88;">All Invoices</h2>
                 <div class="invoice-list" id="allInvoices">
                     <!-- All invoices will be loaded here -->
                 </div>
             </div>
 
             <div id="flags-content" style="display: none;">
-                <h2>CTF Flags Captured</h2>
+                <h2 style="color:#00ff88;">CTF Flags Captured</h2>
                 <div class="invoice-list" id="ctfFlags">
                     <!-- CTF flags will be loaded here -->
                 </div>
             </div>
         </div>
+      </div>
     </div>
 
-    <div class="footer">
+    <footer class="footer">
         <p>&copy; 2025 CineFlow Productions. All Rights Reserved.</p>
         <p>
             <a href="#">Privacy Policy</a> |
             <a href="#">Terms of Service</a> |
             <a href="#">Site Map</a> |
-            <a href="admin-dashboard.html" style="color: #3498db; font-weight: bold;">Admin Portal</a>
+            <a href="admin-dashboard.html" style="color: #00ccff; font-weight: bold;">Admin Portal</a>
         </p>
-    </div>
+    </footer>
 
     <script>
         let currentConfig = {};
 
-        function showTab(tabName) {
+        function showTab(e, tabName) {
             // Hide all content
             document.querySelectorAll('[id$="-content"]').forEach(content => {
                 content.style.display = 'none';
@@ -228,7 +165,7 @@
             
             // Show selected content and activate tab
             document.getElementById(tabName + '-content').style.display = 'block';
-            event.target.classList.add('active');
+            if (e && e.target) { e.target.classList.add('active'); }
             
             // Load data for the selected tab
             if (tabName === 'pending') {
@@ -584,6 +521,7 @@ function getFlagType(flag) {
             loadConfig();  // Load configuration on page load
         });
     </script>
+
 </body>
 </html>
 
